@@ -163,22 +163,11 @@ var Tsentris;
         }
         move(_transformation) {
             this.mtxLocal.translate(_transformation.translation);
-            this.shape.mtxLocal.rotate(_transformation.rotation);
+            this.shape.mtxLocal.rotate(_transformation.rotation, true);
         }
-        // public rotatePerspektive(_angle: number): void {
-        //   this.mtxLocal.rotateY(_angle);
-        //   this.shape!.mtxLocal.rotateY(-_angle, true);
-        // }
-        // public rotateToSegment(_segment: number): void {
-        //   while (_segment != this.segment) {
-        //     this.rotatePerspektive(-90);
-        //     this.segment = ++this.segment % 4;
-        //   }
-        //   // console.log(this.mtxWorld.translation.toString());
-        // }
         checkCollisions(_transformation) {
             let save = [this.mtxLocal.getMutator(), this.shape.mtxLocal.getMutator()];
-            this.shape.mtxLocal.rotate(_transformation.rotation, true);
+            this.shape.mtxWorld.rotate(_transformation.rotation, true);
             this.mtxLocal.translate(_transformation.translation);
             ƒ.Render.prepare(Tsentris.game);
             let collisions = [];
