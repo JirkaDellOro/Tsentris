@@ -135,8 +135,8 @@ namespace Tsentris {
     // let segmentAfter: number = camera.getSegmentY();
 
     // if (segmentAfter - segmentBefore) {
-    if (!ƒ.Time.game.hasTimers())
-      control.rotateToSegment(camera.getSegmentY());
+    // if (!ƒ.Time.game.hasTimers())
+    //   control.rotateToSegment(camera.getSegmentY());
     // }
 
     updateDisplay();
@@ -155,10 +155,10 @@ namespace Tsentris {
       dropFragment();
     }
 
-    if (_event.code == ƒ.KEYBOARD_CODE.Q)
-      control.rotatePerspektive(-90);
-    if (_event.code == ƒ.KEYBOARD_CODE.E)
-      control.rotatePerspektive(90);
+    // if (_event.code == ƒ.KEYBOARD_CODE.Q)
+    //   control.rotatePerspektive(-90);
+    // if (_event.code == ƒ.KEYBOARD_CODE.E)
+    //   control.rotatePerspektive(90);
 
     let transformation: Transformation = Control.transformations[_event.code];
     if (transformation)
@@ -171,10 +171,10 @@ namespace Tsentris {
 
   //#region Start/Drop Fragments
   export function startRandomFragment(): void {
-    let fragment: Fragment = Fragment.getRandom();
+    let fragment: Shape = Shape.getRandom();
     let cardinals: ƒ.Vector3[] = Array.from(Grid.cardinals);
     control.mtxLocal.translation = ƒ.Vector3.ZERO();
-    control.setFragment(fragment);
+    control.setShape(fragment);
     updateDisplay();
     let start: Transformation = {};
     try {
@@ -253,11 +253,17 @@ namespace Tsentris {
 
   function move(_transformation: Transformation): void {
     let animationSteps: number = 5;
-    let fullRotation: number = 90;
-    let fullTranslation: number = 1;
+    // let fullRotation: number = 90;
+    // let fullTranslation: number = 1;
+    // let move: Transformation = {
+    //   rotation: _transformation.rotation ? ƒ.Vector3.SCALE(_transformation.rotation, fullRotation) : new ƒ.Vector3(),
+    //   translation: _transformation.translation ? ƒ.Vector3.SCALE(_transformation.translation, fullTranslation) : new ƒ.Vector3()
+    // };
+
+    let mtxControl: ƒ.Matrix4x4 = camera.getControlMatrix();
     let move: Transformation = {
-      rotation: _transformation.rotation ? ƒ.Vector3.SCALE(_transformation.rotation, fullRotation) : new ƒ.Vector3(),
-      translation: _transformation.translation ? ƒ.Vector3.SCALE(_transformation.translation, fullTranslation) : new ƒ.Vector3()
+      rotation: _transformation.rotation ? ƒ.Vector3.TRANSFORMATION(_transformation.rotation, mtxControl) : new ƒ.Vector3(),
+      translation: _transformation.translation ? ƒ.Vector3.TRANSFORMATION(_transformation.translation, mtxControl) : new ƒ.Vector3()
     };
 
     if (control.checkCollisions(move).length > 0)

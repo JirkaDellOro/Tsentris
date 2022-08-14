@@ -1,17 +1,17 @@
 namespace Tsentris {
   import ƒ = FudgeCore;
 
-  export class Fragment extends ƒ.Node {
-    private static shapes: number[][][] = Fragment.getShapeArray();
+  export class Shape extends ƒ.Node {
+    private static shapes: number[][][] = Shape.getShapeArray();
     public position: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
 
     constructor(_shape: number, _position: ƒ.Vector3 = ƒ.Vector3.ZERO()) {
       super("Fragment-Type" + _shape);
-      let shape: number[][] = Fragment.shapes[_shape];
+      let shape: number[][] = Shape.shapes[_shape];
       for (let position of shape) {
         let type: CUBE_TYPE;
         do {
-          type = Fragment.getRandomEnum(CUBE_TYPE);
+          type = Shape.getRandomEnum(CUBE_TYPE);
         } while (type == CUBE_TYPE.BLACK);
         let vctPosition: ƒ.Vector3 = ƒ.Vector3.ZERO();
         vctPosition.set(position[0], position[1], position[2]);
@@ -22,9 +22,9 @@ namespace Tsentris {
       this.addComponent(new ƒ.ComponentTransform(ƒ.Matrix4x4.TRANSLATION(_position)));
     }
 
-    public static getRandom(): Fragment {
-      let shape: number = Math.floor(Math.random() * Fragment.shapes.length);
-      let fragment: Fragment = new Fragment(shape);
+    public static getRandom(): Shape {
+      let shape: number = Math.floor(Math.random() * Shape.shapes.length);
+      let fragment: Shape = new Shape(shape);
       return fragment;
     }
 

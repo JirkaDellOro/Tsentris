@@ -70,11 +70,29 @@ namespace Tsentris {
       this.setDistance(distance);
     }
 
-    public getRotationY(): number {
-      return this.mtxLocal.rotation.y;
-    }
-    public getSegmentY(): number {
-      return (4 + Math.floor((-this.getRotationY() + 45) / 90)) % 4;
+    public getControlMatrix(): ƒ.Matrix4x4 {
+      let view: ƒ.Vector3 = this.rotatorX.mtxWorld.getZ();
+      let sorted: (string | number)[][] = [["X", view.x], ["Y", view.y], ["Z", view.z]];
+      sorted.sort((_a, _b) => Math.abs(Number(_a[1])) > Math.abs(Number(_b[1])) ? -1 : 1);
+      let result = sorted.map(_element => (_element[1] > 0 ? "+" : "-") + _element[0]);
+      // console.log(result);
+
+      let control: ƒ.Matrix4x4 = ƒ.Matrix4x4.IDENTITY();
+      let rotY: string = result[0];
+      if (result[0].charAt(1) == "Y")
+        rotY = result[1];
+      switch (rotY) {
+        case "-Z": control.rotateY(180); break;
+        case "+X": control.rotateY(90); break;
+        case "-X": control.rotateY(-90); break;
+      }
+      if (result[0].charAt(1) == "Y")
+        if (result[0] == "-Y")
+          control.rotateX(90);
+        else
+          control.rotateX(-90);
+
+      return control;
     }
   }
 }

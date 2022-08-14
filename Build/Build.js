@@ -54,11 +54,33 @@ var Tsentris;
             let distance = this.cmpCamera.mtxPivot.translation.z + _delta;
             this.setDistance(distance);
         }
-        getRotationY() {
-            return this.mtxLocal.rotation.y;
-        }
-        getSegmentY() {
-            return (4 + Math.floor((-this.getRotationY() + 45) / 90)) % 4;
+        getControlMatrix() {
+            let view = this.rotatorX.mtxWorld.getZ();
+            let sorted = [["X", view.x], ["Y", view.y], ["Z", view.z]];
+            sorted.sort((_a, _b) => Math.abs(Number(_a[1])) > Math.abs(Number(_b[1])) ? -1 : 1);
+            let result = sorted.map(_element => (_element[1] > 0 ? "+" : "-") + _element[0]);
+            // console.log(result);
+            let control = ƒ.Matrix4x4.IDENTITY();
+            let rotY = result[0];
+            if (result[0].charAt(1) == "Y")
+                rotY = result[1];
+            switch (rotY) {
+                case "-Z":
+                    control.rotateY(180);
+                    break;
+                case "+X":
+                    control.rotateY(90);
+                    break;
+                case "-X":
+                    control.rotateY(-90);
+                    break;
+            }
+            if (result[0].charAt(1) == "Y")
+                if (result[0] == "-Y")
+                    control.rotateX(90);
+                else
+                    control.rotateX(-90);
+            return control;
         }
     }
     Tsentris.CameraOrbit = CameraOrbit;
@@ -113,7 +135,7 @@ var Tsentris;
     var ƒ = FudgeCore;
     class Control extends ƒ.Node {
         static transformations = Control.defineControls();
-        fragment;
+        shape;
         segment = 0;
         constructor() {
             super("Control");
@@ -121,62 +143,57 @@ var Tsentris;
         }
         static defineControls() {
             let controls = {};
-            controls[ƒ.KEYBOARD_CODE.ARROW_UP] = { rotation: ƒ.Vector3.X(-1) };
-            controls[ƒ.KEYBOARD_CODE.ARROW_DOWN] = { rotation: ƒ.Vector3.X(1) };
-            controls[ƒ.KEYBOARD_CODE.ARROW_LEFT] = { rotation: ƒ.Vector3.Y(-1) };
-            controls[ƒ.KEYBOARD_CODE.ARROW_RIGHT] = { rotation: ƒ.Vector3.Y(1) };
-            controls[ƒ.KEYBOARD_CODE.W] = { translation: ƒ.Vector3.Z(-1) };
-            controls[ƒ.KEYBOARD_CODE.S] = { translation: ƒ.Vector3.Z(1) };
+            controls[ƒ.KEYBOARD_CODE.ARROW_UP] = { rotation: ƒ.Vector3.X(-90) };
+            controls[ƒ.KEYBOARD_CODE.ARROW_DOWN] = { rotation: ƒ.Vector3.X(90) };
+            controls[ƒ.KEYBOARD_CODE.ARROW_LEFT] = { rotation: ƒ.Vector3.Y(-90) };
+            controls[ƒ.KEYBOARD_CODE.ARROW_RIGHT] = { rotation: ƒ.Vector3.Y(90) };
+            controls[ƒ.KEYBOARD_CODE.W] = { translation: ƒ.Vector3.Y(1) };
+            controls[ƒ.KEYBOARD_CODE.S] = { translation: ƒ.Vector3.Y(-1) };
             controls[ƒ.KEYBOARD_CODE.A] = { translation: ƒ.Vector3.X(-1) };
             controls[ƒ.KEYBOARD_CODE.D] = { translation: ƒ.Vector3.X(1) };
             controls[ƒ.KEYBOARD_CODE.SHIFT_LEFT] = controls[ƒ.KEYBOARD_CODE.SHIFT_RIGHT] = { translation: ƒ.Vector3.Y(1) };
             controls[ƒ.KEYBOARD_CODE.CTRL_LEFT] = controls[ƒ.KEYBOARD_CODE.CTRL_RIGHT] = { translation: ƒ.Vector3.Y(-1) };
             return controls;
         }
-        setFragment(_fragment) {
+        setShape(_shape) {
             for (let child of this.getChildren())
                 this.removeChild(child);
-            this.appendChild(_fragment);
-            this.fragment = _fragment;
+            this.appendChild(_shape);
+            this.shape = _shape;
         }
         move(_transformation) {
-            let mtxContainer = this.mtxLocal;
-            let mtxFragment = this.fragment.mtxLocal;
-            mtxFragment.rotate(_transformation.rotation, true);
-            mtxContainer.translate(_transformation.translation);
+            this.mtxLocal.translate(_transformation.translation);
+            this.shape.mtxLocal.rotate(_transformation.rotation);
         }
-        rotatePerspektive(_angle) {
-            let mtxContainer = this.mtxLocal;
-            let mtxFragment = this.fragment.mtxLocal;
-            mtxContainer.rotateY(_angle);
-            mtxFragment.rotateY(-_angle, true);
-        }
-        rotateToSegment(_segment) {
-            while (_segment != this.segment) {
-                this.rotatePerspektive(-90);
-                this.segment = ++this.segment % 4;
-            }
-        }
+        // public rotatePerspektive(_angle: number): void {
+        //   this.mtxLocal.rotateY(_angle);
+        //   this.shape!.mtxLocal.rotateY(-_angle, true);
+        // }
+        // public rotateToSegment(_segment: number): void {
+        //   while (_segment != this.segment) {
+        //     this.rotatePerspektive(-90);
+        //     this.segment = ++this.segment % 4;
+        //   }
+        //   // console.log(this.mtxWorld.translation.toString());
+        // }
         checkCollisions(_transformation) {
-            let mtxContainer = this.mtxLocal;
-            let mtxFragment = this.fragment.mtxLocal;
-            let save = [mtxContainer.getMutator(), mtxFragment.getMutator()];
-            mtxFragment.rotate(_transformation.rotation, true);
-            mtxContainer.translate(_transformation.translation);
+            let save = [this.mtxLocal.getMutator(), this.shape.mtxLocal.getMutator()];
+            this.shape.mtxLocal.rotate(_transformation.rotation, true);
+            this.mtxLocal.translate(_transformation.translation);
             ƒ.Render.prepare(Tsentris.game);
             let collisions = [];
-            for (let cube of this.fragment.getChildren()) {
+            for (let cube of this.shape.getChildren()) {
                 let element = Tsentris.grid.pull(cube.mtxWorld.translation);
                 if (element)
                     collisions.push({ element: element, cube: cube });
             }
-            mtxContainer.mutate(save[0]);
-            mtxFragment.mutate(save[1]);
+            this.mtxLocal.mutate(save[0]);
+            this.shape.mtxLocal.mutate(save[1]);
             return collisions;
         }
         dropFragment() {
             let frozen = [];
-            for (let cube of this.fragment.getChildren()) {
+            for (let cube of this.shape.getChildren()) {
                 let position = cube.mtxWorld.translation;
                 cube.mtxLocal.translation = position;
                 let element = new Tsentris.GridElement(cube);
@@ -189,7 +206,7 @@ var Tsentris;
         }
         isConnected() {
             let neighbors = [];
-            let children = this.fragment.getChildren();
+            let children = this.shape.getChildren();
             for (let cube of children) {
                 let found = Tsentris.grid.findNeighbors(cube.mtxWorld.translation);
                 neighbors.push(...found);
@@ -241,59 +258,6 @@ var Tsentris;
         }
     }
     Tsentris.Cube = Cube;
-})(Tsentris || (Tsentris = {}));
-var Tsentris;
-(function (Tsentris) {
-    var ƒ = FudgeCore;
-    class Fragment extends ƒ.Node {
-        static shapes = Fragment.getShapeArray();
-        position = new ƒ.Vector3(0, 0, 0);
-        constructor(_shape, _position = ƒ.Vector3.ZERO()) {
-            super("Fragment-Type" + _shape);
-            let shape = Fragment.shapes[_shape];
-            for (let position of shape) {
-                let type;
-                do {
-                    type = Fragment.getRandomEnum(Tsentris.CUBE_TYPE);
-                } while (type == Tsentris.CUBE_TYPE.BLACK);
-                let vctPosition = ƒ.Vector3.ZERO();
-                vctPosition.set(position[0], position[1], position[2]);
-                let cube = new Tsentris.Cube(type, vctPosition);
-                this.appendChild(cube);
-            }
-            this.addComponent(new ƒ.ComponentTransform(ƒ.Matrix4x4.TRANSLATION(_position)));
-        }
-        static getRandom() {
-            let shape = Math.floor(Math.random() * Fragment.shapes.length);
-            let fragment = new Fragment(shape);
-            return fragment;
-        }
-        static getShapeArray() {
-            return [
-                // Corner
-                [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]],
-                // Quad
-                [[0, 0, 0], [1, 0, 0], [0, 1, 0], [1, 1, 0]],
-                // S
-                [[0, 0, 0], [0, 1, 0], [1, 0, 0], [1, -1, 0]],
-                // T
-                [[0, 0, 0], [0, 1, 0], [-1, 1, 0], [1, 1, 0]],
-                // S twisted
-                [[0, 0, 0], [0, 1, 0], [1, 1, 0], [0, 0, 1]],
-                // S twisted reverse
-                [[0, 0, 0], [0, 1, 0], [1, 1, 0], [0, 0, -1]],
-                // L
-                [[0, 0, 0], [0, 1, 0], [0, -1, 0], [1, -1, 0]],
-                // I
-                [[0, 0, 0], [0, 1, 0], [0, 2, 0], [0, -1, 0]]
-            ];
-        }
-        static getRandomEnum(_enum) {
-            let randomKey = Object.keys(_enum)[Math.floor(Math.random() * Object.keys(_enum).length)];
-            return _enum[randomKey];
-        }
-    }
-    Tsentris.Fragment = Fragment;
 })(Tsentris || (Tsentris = {}));
 var Tsentris;
 (function (Tsentris) {
@@ -501,8 +465,8 @@ var Tsentris;
         Tsentris.camera.rotateX(_event.movementY * speedCameraRotation);
         // let segmentAfter: number = camera.getSegmentY();
         // if (segmentAfter - segmentBefore) {
-        if (!Tsentris.ƒ.Time.game.hasTimers())
-            control.rotateToSegment(Tsentris.camera.getSegmentY());
+        // if (!ƒ.Time.game.hasTimers())
+        //   control.rotateToSegment(camera.getSegmentY());
         // }
         updateDisplay();
     }
@@ -516,10 +480,10 @@ var Tsentris;
         if (_event.code == Tsentris.ƒ.KEYBOARD_CODE.SPACE) {
             dropFragment();
         }
-        if (_event.code == Tsentris.ƒ.KEYBOARD_CODE.Q)
-            control.rotatePerspektive(-90);
-        if (_event.code == Tsentris.ƒ.KEYBOARD_CODE.E)
-            control.rotatePerspektive(90);
+        // if (_event.code == ƒ.KEYBOARD_CODE.Q)
+        //   control.rotatePerspektive(-90);
+        // if (_event.code == ƒ.KEYBOARD_CODE.E)
+        //   control.rotatePerspektive(90);
         let transformation = Tsentris.Control.transformations[_event.code];
         if (transformation)
             move(transformation);
@@ -528,10 +492,10 @@ var Tsentris;
     //#endregion
     //#region Start/Drop Fragments
     function startRandomFragment() {
-        let fragment = Tsentris.Fragment.getRandom();
+        let fragment = Tsentris.Shape.getRandom();
         let cardinals = Array.from(Tsentris.Grid.cardinals);
         control.mtxLocal.translation = Tsentris.ƒ.Vector3.ZERO();
-        control.setFragment(fragment);
+        control.setShape(fragment);
         updateDisplay();
         let start = {};
         try {
@@ -607,11 +571,16 @@ var Tsentris;
     Tsentris.handleCombos = handleCombos;
     function move(_transformation) {
         let animationSteps = 5;
-        let fullRotation = 90;
-        let fullTranslation = 1;
+        // let fullRotation: number = 90;
+        // let fullTranslation: number = 1;
+        // let move: Transformation = {
+        //   rotation: _transformation.rotation ? ƒ.Vector3.SCALE(_transformation.rotation, fullRotation) : new ƒ.Vector3(),
+        //   translation: _transformation.translation ? ƒ.Vector3.SCALE(_transformation.translation, fullTranslation) : new ƒ.Vector3()
+        // };
+        let mtxControl = Tsentris.camera.getControlMatrix();
         let move = {
-            rotation: _transformation.rotation ? Tsentris.ƒ.Vector3.SCALE(_transformation.rotation, fullRotation) : new Tsentris.ƒ.Vector3(),
-            translation: _transformation.translation ? Tsentris.ƒ.Vector3.SCALE(_transformation.translation, fullTranslation) : new Tsentris.ƒ.Vector3()
+            rotation: _transformation.rotation ? Tsentris.ƒ.Vector3.TRANSFORMATION(_transformation.rotation, mtxControl) : new Tsentris.ƒ.Vector3(),
+            translation: _transformation.translation ? Tsentris.ƒ.Vector3.TRANSFORMATION(_transformation.translation, mtxControl) : new Tsentris.ƒ.Vector3()
         };
         if (control.checkCollisions(move).length > 0)
             return;
@@ -737,6 +706,59 @@ var Tsentris;
         };
     }
     Tsentris.Points = Points;
+})(Tsentris || (Tsentris = {}));
+var Tsentris;
+(function (Tsentris) {
+    var ƒ = FudgeCore;
+    class Shape extends ƒ.Node {
+        static shapes = Shape.getShapeArray();
+        position = new ƒ.Vector3(0, 0, 0);
+        constructor(_shape, _position = ƒ.Vector3.ZERO()) {
+            super("Fragment-Type" + _shape);
+            let shape = Shape.shapes[_shape];
+            for (let position of shape) {
+                let type;
+                do {
+                    type = Shape.getRandomEnum(Tsentris.CUBE_TYPE);
+                } while (type == Tsentris.CUBE_TYPE.BLACK);
+                let vctPosition = ƒ.Vector3.ZERO();
+                vctPosition.set(position[0], position[1], position[2]);
+                let cube = new Tsentris.Cube(type, vctPosition);
+                this.appendChild(cube);
+            }
+            this.addComponent(new ƒ.ComponentTransform(ƒ.Matrix4x4.TRANSLATION(_position)));
+        }
+        static getRandom() {
+            let shape = Math.floor(Math.random() * Shape.shapes.length);
+            let fragment = new Shape(shape);
+            return fragment;
+        }
+        static getShapeArray() {
+            return [
+                // Corner
+                [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]],
+                // Quad
+                [[0, 0, 0], [1, 0, 0], [0, 1, 0], [1, 1, 0]],
+                // S
+                [[0, 0, 0], [0, 1, 0], [1, 0, 0], [1, -1, 0]],
+                // T
+                [[0, 0, 0], [0, 1, 0], [-1, 1, 0], [1, 1, 0]],
+                // S twisted
+                [[0, 0, 0], [0, 1, 0], [1, 1, 0], [0, 0, 1]],
+                // S twisted reverse
+                [[0, 0, 0], [0, 1, 0], [1, 1, 0], [0, 0, -1]],
+                // L
+                [[0, 0, 0], [0, 1, 0], [0, -1, 0], [1, -1, 0]],
+                // I
+                [[0, 0, 0], [0, 1, 0], [0, 2, 0], [0, -1, 0]]
+            ];
+        }
+        static getRandomEnum(_enum) {
+            let randomKey = Object.keys(_enum)[Math.floor(Math.random() * Object.keys(_enum).length)];
+            return _enum[randomKey];
+        }
+    }
+    Tsentris.Shape = Shape;
 })(Tsentris || (Tsentris = {}));
 var Tsentris;
 (function (Tsentris) {
