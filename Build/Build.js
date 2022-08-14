@@ -134,25 +134,12 @@ var Tsentris;
 (function (Tsentris) {
     var ƒ = FudgeCore;
     class Control extends ƒ.Node {
-        // public static transformations: Transformations = Control.defineControls();
         shape;
         segment = 0;
         constructor() {
             super("Control");
             this.addComponent(new ƒ.ComponentTransform());
         }
-        // public static defineControls(): Transformations {
-        //   let controls: Transformations = {};
-        //   controls[ƒ.KEYBOARD_CODE.ARROW_UP] = { rotation: ƒ.Vector3.X(-90) };
-        //   controls[ƒ.KEYBOARD_CODE.ARROW_DOWN] = { rotation: ƒ.Vector3.X(90) };
-        //   controls[ƒ.KEYBOARD_CODE.ARROW_LEFT] = { rotation: ƒ.Vector3.Y(-90) };
-        //   controls[ƒ.KEYBOARD_CODE.ARROW_RIGHT] = { rotation: ƒ.Vector3.Y(90) };
-        //   controls[ƒ.KEYBOARD_CODE.W] = { translation: ƒ.Vector3.Y(1) };
-        //   controls[ƒ.KEYBOARD_CODE.S] = { translation: ƒ.Vector3.Y(-1) };
-        //   controls[ƒ.KEYBOARD_CODE.A] = { translation: ƒ.Vector3.X(-1) };
-        //   controls[ƒ.KEYBOARD_CODE.D] = { translation: ƒ.Vector3.X(1) };
-        //   return controls;
-        // }
         setShape(_shape) {
             for (let child of this.getChildren())
                 this.removeChild(child);
@@ -165,8 +152,8 @@ var Tsentris;
         }
         checkCollisions(_transformation) {
             let save = [this.mtxLocal.getMutator(), this.shape.mtxLocal.getMutator()];
-            this.shape.mtxWorld.rotate(_transformation.rotation, true);
             this.mtxLocal.translate(_transformation.translation);
+            this.shape.mtxLocal.rotate(_transformation.rotation, true);
             ƒ.Render.prepare(Tsentris.game);
             let collisions = [];
             for (let cube of this.shape.getChildren()) {
