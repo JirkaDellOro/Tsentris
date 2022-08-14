@@ -155,13 +155,23 @@ namespace Tsentris {
       dropFragment();
     }
 
-    // if (_event.code == ƒ.KEYBOARD_CODE.Q)
-    //   control.rotatePerspektive(-90);
-    // if (_event.code == ƒ.KEYBOARD_CODE.E)
-    //   control.rotatePerspektive(90);
+    let transformation: Transformation = {}; //  = Control.transformations[_event.code];
+    if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SHIFT_LEFT, ƒ.KEYBOARD_CODE.SHIFT_RIGHT, ƒ.KEYBOARD_CODE.CTRL_LEFT, ƒ.KEYBOARD_CODE.CTRL_RIGHT]))
+      transformation = {
+        rotation: new ƒ.Vector3(
+          -90 * ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.ARROW_UP, ƒ.KEYBOARD_CODE.W], [ƒ.KEYBOARD_CODE.ARROW_DOWN, ƒ.KEYBOARD_CODE.S]),
+          90 * ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.ARROW_LEFT, ƒ.KEYBOARD_CODE.A], [ƒ.KEYBOARD_CODE.ARROW_RIGHT, ƒ.KEYBOARD_CODE.D]),
+          0)
+      };
+    else
+      transformation = {
+        translation: new ƒ.Vector3(
+          -1 * ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.ARROW_LEFT, ƒ.KEYBOARD_CODE.A], [ƒ.KEYBOARD_CODE.ARROW_RIGHT, ƒ.KEYBOARD_CODE.D]),
+          1 * ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.ARROW_UP, ƒ.KEYBOARD_CODE.W], [ƒ.KEYBOARD_CODE.ARROW_DOWN, ƒ.KEYBOARD_CODE.S]),
+          0)
+      };
 
-    let transformation: Transformation = Control.transformations[_event.code];
-    if (transformation)
+    if (transformation != {})
       move(transformation);
 
     updateDisplay();
@@ -253,12 +263,6 @@ namespace Tsentris {
 
   function move(_transformation: Transformation): void {
     let animationSteps: number = 5;
-    // let fullRotation: number = 90;
-    // let fullTranslation: number = 1;
-    // let move: Transformation = {
-    //   rotation: _transformation.rotation ? ƒ.Vector3.SCALE(_transformation.rotation, fullRotation) : new ƒ.Vector3(),
-    //   translation: _transformation.translation ? ƒ.Vector3.SCALE(_transformation.translation, fullTranslation) : new ƒ.Vector3()
-    // };
 
     let mtxControl: ƒ.Matrix4x4 = camera.getControlMatrix();
     let move: Transformation = {

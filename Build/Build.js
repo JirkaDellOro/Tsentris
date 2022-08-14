@@ -134,27 +134,25 @@ var Tsentris;
 (function (Tsentris) {
     var ƒ = FudgeCore;
     class Control extends ƒ.Node {
-        static transformations = Control.defineControls();
+        // public static transformations: Transformations = Control.defineControls();
         shape;
         segment = 0;
         constructor() {
             super("Control");
             this.addComponent(new ƒ.ComponentTransform());
         }
-        static defineControls() {
-            let controls = {};
-            controls[ƒ.KEYBOARD_CODE.ARROW_UP] = { rotation: ƒ.Vector3.X(-90) };
-            controls[ƒ.KEYBOARD_CODE.ARROW_DOWN] = { rotation: ƒ.Vector3.X(90) };
-            controls[ƒ.KEYBOARD_CODE.ARROW_LEFT] = { rotation: ƒ.Vector3.Y(-90) };
-            controls[ƒ.KEYBOARD_CODE.ARROW_RIGHT] = { rotation: ƒ.Vector3.Y(90) };
-            controls[ƒ.KEYBOARD_CODE.W] = { translation: ƒ.Vector3.Y(1) };
-            controls[ƒ.KEYBOARD_CODE.S] = { translation: ƒ.Vector3.Y(-1) };
-            controls[ƒ.KEYBOARD_CODE.A] = { translation: ƒ.Vector3.X(-1) };
-            controls[ƒ.KEYBOARD_CODE.D] = { translation: ƒ.Vector3.X(1) };
-            controls[ƒ.KEYBOARD_CODE.SHIFT_LEFT] = controls[ƒ.KEYBOARD_CODE.SHIFT_RIGHT] = { translation: ƒ.Vector3.Y(1) };
-            controls[ƒ.KEYBOARD_CODE.CTRL_LEFT] = controls[ƒ.KEYBOARD_CODE.CTRL_RIGHT] = { translation: ƒ.Vector3.Y(-1) };
-            return controls;
-        }
+        // public static defineControls(): Transformations {
+        //   let controls: Transformations = {};
+        //   controls[ƒ.KEYBOARD_CODE.ARROW_UP] = { rotation: ƒ.Vector3.X(-90) };
+        //   controls[ƒ.KEYBOARD_CODE.ARROW_DOWN] = { rotation: ƒ.Vector3.X(90) };
+        //   controls[ƒ.KEYBOARD_CODE.ARROW_LEFT] = { rotation: ƒ.Vector3.Y(-90) };
+        //   controls[ƒ.KEYBOARD_CODE.ARROW_RIGHT] = { rotation: ƒ.Vector3.Y(90) };
+        //   controls[ƒ.KEYBOARD_CODE.W] = { translation: ƒ.Vector3.Y(1) };
+        //   controls[ƒ.KEYBOARD_CODE.S] = { translation: ƒ.Vector3.Y(-1) };
+        //   controls[ƒ.KEYBOARD_CODE.A] = { translation: ƒ.Vector3.X(-1) };
+        //   controls[ƒ.KEYBOARD_CODE.D] = { translation: ƒ.Vector3.X(1) };
+        //   return controls;
+        // }
         setShape(_shape) {
             for (let child of this.getChildren())
                 this.removeChild(child);
@@ -469,12 +467,16 @@ var Tsentris;
         if (_event.code == Tsentris.ƒ.KEYBOARD_CODE.SPACE) {
             dropFragment();
         }
-        // if (_event.code == ƒ.KEYBOARD_CODE.Q)
-        //   control.rotatePerspektive(-90);
-        // if (_event.code == ƒ.KEYBOARD_CODE.E)
-        //   control.rotatePerspektive(90);
-        let transformation = Tsentris.Control.transformations[_event.code];
-        if (transformation)
+        let transformation = {}; //  = Control.transformations[_event.code];
+        if (Tsentris.ƒ.Keyboard.isPressedOne([Tsentris.ƒ.KEYBOARD_CODE.SHIFT_LEFT, Tsentris.ƒ.KEYBOARD_CODE.SHIFT_RIGHT, Tsentris.ƒ.KEYBOARD_CODE.CTRL_LEFT, Tsentris.ƒ.KEYBOARD_CODE.CTRL_RIGHT]))
+            transformation = {
+                rotation: new Tsentris.ƒ.Vector3(-90 * Tsentris.ƒ.Keyboard.mapToTrit([Tsentris.ƒ.KEYBOARD_CODE.ARROW_UP, Tsentris.ƒ.KEYBOARD_CODE.W], [Tsentris.ƒ.KEYBOARD_CODE.ARROW_DOWN, Tsentris.ƒ.KEYBOARD_CODE.S]), 90 * Tsentris.ƒ.Keyboard.mapToTrit([Tsentris.ƒ.KEYBOARD_CODE.ARROW_LEFT, Tsentris.ƒ.KEYBOARD_CODE.A], [Tsentris.ƒ.KEYBOARD_CODE.ARROW_RIGHT, Tsentris.ƒ.KEYBOARD_CODE.D]), 0)
+            };
+        else
+            transformation = {
+                translation: new Tsentris.ƒ.Vector3(-1 * Tsentris.ƒ.Keyboard.mapToTrit([Tsentris.ƒ.KEYBOARD_CODE.ARROW_LEFT, Tsentris.ƒ.KEYBOARD_CODE.A], [Tsentris.ƒ.KEYBOARD_CODE.ARROW_RIGHT, Tsentris.ƒ.KEYBOARD_CODE.D]), 1 * Tsentris.ƒ.Keyboard.mapToTrit([Tsentris.ƒ.KEYBOARD_CODE.ARROW_UP, Tsentris.ƒ.KEYBOARD_CODE.W], [Tsentris.ƒ.KEYBOARD_CODE.ARROW_DOWN, Tsentris.ƒ.KEYBOARD_CODE.S]), 0)
+            };
+        if (transformation != {})
             move(transformation);
         updateDisplay();
     }
@@ -560,12 +562,6 @@ var Tsentris;
     Tsentris.handleCombos = handleCombos;
     function move(_transformation) {
         let animationSteps = 5;
-        // let fullRotation: number = 90;
-        // let fullTranslation: number = 1;
-        // let move: Transformation = {
-        //   rotation: _transformation.rotation ? ƒ.Vector3.SCALE(_transformation.rotation, fullRotation) : new ƒ.Vector3(),
-        //   translation: _transformation.translation ? ƒ.Vector3.SCALE(_transformation.translation, fullTranslation) : new ƒ.Vector3()
-        // };
         let mtxControl = Tsentris.camera.getControlMatrix();
         let move = {
             rotation: _transformation.rotation ? Tsentris.ƒ.Vector3.TRANSFORMATION(_transformation.rotation, mtxControl) : new Tsentris.ƒ.Vector3(),
