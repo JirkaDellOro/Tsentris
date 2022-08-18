@@ -457,7 +457,7 @@ var Tsentris;
         let transformation = {}; //  = Control.transformations[_event.code];
         if (Tsentris.ƒ.Keyboard.isPressedOne([Tsentris.ƒ.KEYBOARD_CODE.SHIFT_LEFT, Tsentris.ƒ.KEYBOARD_CODE.SHIFT_RIGHT, Tsentris.ƒ.KEYBOARD_CODE.CTRL_LEFT, Tsentris.ƒ.KEYBOARD_CODE.CTRL_RIGHT]))
             transformation = {
-                rotation: new Tsentris.ƒ.Vector3(-90 * Tsentris.ƒ.Keyboard.mapToTrit([Tsentris.ƒ.KEYBOARD_CODE.ARROW_UP, Tsentris.ƒ.KEYBOARD_CODE.W], [Tsentris.ƒ.KEYBOARD_CODE.ARROW_DOWN, Tsentris.ƒ.KEYBOARD_CODE.S]), 90 * Tsentris.ƒ.Keyboard.mapToTrit([Tsentris.ƒ.KEYBOARD_CODE.ARROW_LEFT, Tsentris.ƒ.KEYBOARD_CODE.A], [Tsentris.ƒ.KEYBOARD_CODE.ARROW_RIGHT, Tsentris.ƒ.KEYBOARD_CODE.D]), 0)
+                rotation: new Tsentris.ƒ.Vector3(-90 * Tsentris.ƒ.Keyboard.mapToTrit([Tsentris.ƒ.KEYBOARD_CODE.ARROW_UP, Tsentris.ƒ.KEYBOARD_CODE.W], [Tsentris.ƒ.KEYBOARD_CODE.ARROW_DOWN, Tsentris.ƒ.KEYBOARD_CODE.S]), 90 * Tsentris.ƒ.Keyboard.mapToTrit([Tsentris.ƒ.KEYBOARD_CODE.ARROW_RIGHT, Tsentris.ƒ.KEYBOARD_CODE.D], [Tsentris.ƒ.KEYBOARD_CODE.ARROW_LEFT, Tsentris.ƒ.KEYBOARD_CODE.A]), 0)
             };
         else
             transformation = {
