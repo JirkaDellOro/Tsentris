@@ -161,7 +161,7 @@ namespace Tsentris {
           };
         else
           transformation = {
-            rotation: new ƒ.Vector3(90 * direction.y, -90 * direction.x, 0)
+            rotation: new ƒ.Vector3(-90 * direction.y, 90 * direction.x, 0)
           }
 
         if (transformation != {})
