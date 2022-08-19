@@ -372,6 +372,7 @@ var Tsentris;
         document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.TAP, hndTouch);
         document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.DOUBLE, hndTouch);
         document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.MOVE, hndTouch);
+        document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.NOTCH, hndTouch);
         Tsentris.game.appendChild(control);
         if (Tsentris.args.get("test"))
             Tsentris.startTests();
@@ -440,6 +441,15 @@ var Tsentris;
     function hndTouch(_event) {
         _event.preventDefault();
         console.log(_event.type);
+        switch (_event.type) {
+            case Tsentris.ƒ.EVENT_TOUCH.MOVE:
+                Tsentris.camera.rotateY(_event.detail.offset.x * speedCameraRotation);
+                Tsentris.camera.rotateX(_event.detail.offset.y * speedCameraRotation);
+                updateDisplay();
+                break;
+            default:
+                break;
+        }
     }
     function hndMouseMove(_event) {
         Tsentris.camera.rotateY(_event.movementX * speedCameraRotation);
@@ -780,7 +790,7 @@ var Tsentris;
         ];
         setupGrid(setups);
         Tsentris.startRandomFragment();
-        Tsentris.ƒ.Loop.addEventListener("loopFrame" /* ƒ.EVENT.LOOP_FRAME */, rotateY);
+        Tsentris.ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, rotateY);
         Tsentris.ƒ.Loop.start();
         // ƒ.Time.game.setTimer(4, 0, rotateY);
         function rotateY(_event) {

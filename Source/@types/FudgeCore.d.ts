@@ -2584,6 +2584,12 @@ declare namespace FudgeCore {
         /** custom event not implemented yet */
         ROTATE = "touchRotate"
     }
+    interface EventTouchDetail {
+        position: Vector2;
+        touches: TouchList;
+        offset?: Vector2;
+        cardinal?: Vector2;
+    }
     class EventTouch {
         posStart: Vector2;
         posNotch: Vector2;

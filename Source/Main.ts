@@ -57,6 +57,7 @@ namespace Tsentris {
     document.addEventListener(ƒ.EVENT_TOUCH.TAP, <EventListener>hndTouch);
     document.addEventListener(ƒ.EVENT_TOUCH.DOUBLE, <EventListener>hndTouch);
     document.addEventListener(ƒ.EVENT_TOUCH.MOVE, <EventListener>hndTouch);
+    document.addEventListener(ƒ.EVENT_TOUCH.NOTCH, <EventListener>hndTouch);
 
     game.appendChild(control);
 
@@ -131,9 +132,22 @@ namespace Tsentris {
   }
 
   //#region Interaction
-  function hndTouch(_event:CustomEvent): void {
+  function hndTouch(_event: CustomEvent<ƒ.EventTouchDetail>): void {
     _event.preventDefault();
     console.log(_event.type);
+    
+    switch (_event.type) {
+      case ƒ.EVENT_TOUCH.MOVE:
+
+        camera.rotateY(_event.detail.offset!.x * speedCameraRotation);
+        camera.rotateX(_event.detail.offset!.y * speedCameraRotation);
+
+        updateDisplay();
+        break;
+
+      default:
+        break;
+    }
   }
 
   function hndMouseMove(_event: MouseEvent): void {
