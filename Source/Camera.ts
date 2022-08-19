@@ -18,8 +18,6 @@ namespace Tsentris {
       this.appendChild(rotatorX);
 
       let cmpCamera: ƒ.ComponentCamera = new ƒ.ComponentCamera();
-      // cmpCamera.backgroundColor = new ƒ.Color(1, 1, 1, 1);
-      cmpCamera.clrBackground = ƒ.Color.CSS("WHITE");
       rotatorX.addComponent(cmpCamera);
       cmpCamera.mtxPivot.rotateY(180);
       this.setDistance(20);

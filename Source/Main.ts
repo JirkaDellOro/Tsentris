@@ -7,7 +7,7 @@ namespace Tsentris {
 
   window.addEventListener("load", hndLoad);
 
-  export let game: ƒ.Node = new ƒ.Node("FudgeCraft");
+  export let game: ƒ.Node = new ƒ.Node("Tsentris");
   export let grid: Grid = new Grid();
   export let args: URLSearchParams;
   export let camera: CameraOrbit;
@@ -53,11 +53,8 @@ namespace Tsentris {
     points = new Points(viewport, document.querySelector("#Score")!, document.querySelector("div#Calculation")!);
 
     // setup event handling
-    // viewport.activatePointerEvent(ƒ.EVENT_POINTER.MOVE, true);
-    // viewport.activateWheelEvent(ƒ.EVENT_WHEEL.WHEEL, true);
     viewport.canvas.addEventListener("mousemove", hndMouseMove);
     viewport.canvas.addEventListener("wheel", hndWheelMove);
-
     touchEventDispatcher = new ƒ.TouchEventDispatcher(document, 5, touchNotchTranslation);
     document.addEventListener(ƒ.EVENT_TOUCH.TAP, <EventListener>hndTouch);
     document.addEventListener(ƒ.EVENT_TOUCH.DOUBLE, <EventListener>hndTouch);
@@ -151,7 +148,7 @@ namespace Tsentris {
     switch (_event.type) {
       case ƒ.EVENT_TOUCH.TAP:
         touchRotation = !touchRotation;
-        camera.cmpCamera.clrBackground = ƒ.Color.CSS(touchRotation ? "black" : "white");
+        camera.cmpCamera.clrBackground = ƒ.Color.CSS(touchRotation ? "white" : "black");
         touchEventDispatcher.radiusNotch = touchRotation ? touchNotchRotation : touchNotchTranslation;
         break;
       case ƒ.EVENT_TOUCH.MOVE:

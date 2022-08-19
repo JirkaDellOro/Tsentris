@@ -14,8 +14,6 @@ var Tsentris;
             rotatorX.addComponent(new ƒ.ComponentTransform());
             this.appendChild(rotatorX);
             let cmpCamera = new ƒ.ComponentCamera();
-            // cmpCamera.backgroundColor = new ƒ.Color(1, 1, 1, 1);
-            cmpCamera.clrBackground = ƒ.Color.CSS("WHITE");
             rotatorX.addComponent(cmpCamera);
             cmpCamera.mtxPivot.rotateY(180);
             this.setDistance(20);
@@ -213,7 +211,7 @@ var Tsentris;
             [CUBE_TYPE.MAGENTA, "MAGENTA"],
             [CUBE_TYPE.YELLOW, "YELLOW"],
             [CUBE_TYPE.CYAN, "CYAN"],
-            [CUBE_TYPE.BLACK, "BLACK"]
+            [CUBE_TYPE.BLACK, "GRAY"]
         ]);
         constructor(_type, _position) {
             super("Cube." + _type);
@@ -332,7 +330,7 @@ var Tsentris;
         GAME_STATE[GAME_STATE["OVER"] = 3] = "OVER";
     })(GAME_STATE || (GAME_STATE = {}));
     window.addEventListener("load", hndLoad);
-    Tsentris.game = new Tsentris.ƒ.Node("FudgeCraft");
+    Tsentris.game = new Tsentris.ƒ.Node("Tsentris");
     Tsentris.grid = new Tsentris.Grid();
     let state = GAME_STATE.START;
     let control = new Tsentris.Control();
@@ -368,8 +366,6 @@ var Tsentris;
         Tsentris.ƒ.Debug.log("Viewport", viewport);
         Tsentris.points = new Tsentris.Points(viewport, document.querySelector("#Score"), document.querySelector("div#Calculation"));
         // setup event handling
-        // viewport.activatePointerEvent(ƒ.EVENT_POINTER.MOVE, true);
-        // viewport.activateWheelEvent(ƒ.EVENT_WHEEL.WHEEL, true);
         viewport.canvas.addEventListener("mousemove", hndMouseMove);
         viewport.canvas.addEventListener("wheel", hndWheelMove);
         touchEventDispatcher = new Tsentris.ƒ.TouchEventDispatcher(document, 5, touchNotchTranslation);
@@ -455,7 +451,7 @@ var Tsentris;
         switch (_event.type) {
             case Tsentris.ƒ.EVENT_TOUCH.TAP:
                 touchRotation = !touchRotation;
-                Tsentris.camera.cmpCamera.clrBackground = Tsentris.ƒ.Color.CSS(touchRotation ? "black" : "white");
+                Tsentris.camera.cmpCamera.clrBackground = Tsentris.ƒ.Color.CSS(touchRotation ? "white" : "black");
                 touchEventDispatcher.radiusNotch = touchRotation ? touchNotchRotation : touchNotchTranslation;
                 break;
             case Tsentris.ƒ.EVENT_TOUCH.MOVE:

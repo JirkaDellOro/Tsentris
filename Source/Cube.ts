@@ -21,7 +21,7 @@ namespace Tsentris {
       [CUBE_TYPE.MAGENTA, "MAGENTA"],
       [CUBE_TYPE.YELLOW, "YELLOW"],
       [CUBE_TYPE.CYAN, "CYAN"],
-      [CUBE_TYPE.BLACK, "BLACK"]
+      [CUBE_TYPE.BLACK, "GRAY"]
     ]);
 
     constructor(_type: CUBE_TYPE, _position: ƒ.Vector3) {

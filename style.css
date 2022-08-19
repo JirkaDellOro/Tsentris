@@ -10,7 +10,7 @@ html, body {
 }
 
 body {
-  background-color: white;
+  background-color: black;
   display: grid;
   grid-template-rows: min-content auto min-content 0;
   color: white;
@@ -51,7 +51,7 @@ h1 {
 }
 
 #CallToAction {
-  color: white;
+  color: red;
   /* text-shadow: none; */
   animation-name: example;
   animation-duration: 1s;
