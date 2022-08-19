@@ -369,7 +369,7 @@ var Tsentris;
         // viewport.activateWheelEvent(ƒ.EVENT_WHEEL.WHEEL, true);
         viewport.canvas.addEventListener("mousemove", hndMouseMove);
         viewport.canvas.addEventListener("wheel", hndWheelMove);
-        console.log(new Tsentris.ƒ.EventTouch(document, 5, 20));
+        console.log(new Tsentris.ƒ.EventTouch(document, 5, 30));
         document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.TAP, hndTouch);
         document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.DOUBLE, hndTouch);
         document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.MOVE, hndTouch);
@@ -449,6 +449,7 @@ var Tsentris;
         switch (_event.type) {
             case Tsentris.ƒ.EVENT_TOUCH.TAP:
                 touchRotation = !touchRotation;
+                Tsentris.camera.cmpCamera.clrBackground = Tsentris.ƒ.Color.CSS(touchRotation ? "grey" : "white");
                 break;
             case Tsentris.ƒ.EVENT_TOUCH.MOVE:
                 if (_event.detail.touches.length > 1) {

@@ -54,7 +54,7 @@ namespace Tsentris {
     // viewport.activateWheelEvent(ƒ.EVENT_WHEEL.WHEEL, true);
     viewport.canvas.addEventListener("mousemove", hndMouseMove);
     viewport.canvas.addEventListener("wheel", hndWheelMove);
-    console.log(new ƒ.EventTouch(document, 5, 20));
+    console.log(new ƒ.EventTouch(document, 5, 30));
     document.addEventListener(ƒ.EVENT_TOUCH.TAP, <EventListener>hndTouch);
     document.addEventListener(ƒ.EVENT_TOUCH.DOUBLE, <EventListener>hndTouch);
     document.addEventListener(ƒ.EVENT_TOUCH.MOVE, <EventListener>hndTouch);
@@ -144,6 +144,7 @@ namespace Tsentris {
     switch (_event.type) {
       case ƒ.EVENT_TOUCH.TAP:
         touchRotation = !touchRotation;
+        camera.cmpCamera.clrBackground = ƒ.Color.CSS(touchRotation ? "grey" : "white");
         break;
       case ƒ.EVENT_TOUCH.MOVE:
         if (_event.detail.touches.length > 1) {
