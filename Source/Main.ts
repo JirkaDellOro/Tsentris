@@ -53,6 +53,9 @@ namespace Tsentris {
     // viewport.activateWheelEvent(ƒ.EVENT_WHEEL.WHEEL, true);
     viewport.canvas.addEventListener("mousemove", hndMouseMove);
     viewport.canvas.addEventListener("wheel", hndWheelMove);
+    viewport.canvas.addEventListener(ƒ.EVENT_TOUCH.TAP, <EventListener>hndTouch);
+    viewport.canvas.addEventListener(ƒ.EVENT_TOUCH.DOUBLE, <EventListener>hndTouch);
+    viewport.canvas.addEventListener(ƒ.EVENT_TOUCH.MOVE, <EventListener>hndTouch);
 
     game.appendChild(control);
 
@@ -127,17 +130,13 @@ namespace Tsentris {
   }
 
   //#region Interaction
+  function hndTouch(_event:CustomEvent): void {
+    console.log(_event);
+  }
 
   function hndMouseMove(_event: MouseEvent): void {
-    // let segmentBefore: number = camera.getSegmentY();
     camera.rotateY(_event.movementX * speedCameraRotation);
     camera.rotateX(_event.movementY * speedCameraRotation);
-    // let segmentAfter: number = camera.getSegmentY();
-
-    // if (segmentAfter - segmentBefore) {
-    // if (!ƒ.Time.game.hasTimers())
-    //   control.rotateToSegment(camera.getSegmentY());
-    // }
 
     updateDisplay();
   }

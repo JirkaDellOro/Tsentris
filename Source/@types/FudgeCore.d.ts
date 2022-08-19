@@ -640,7 +640,7 @@ declare namespace FudgeCore {
 declare namespace FudgeCore {
     class RenderInjectorCoat extends RenderInjector {
         static decorate(_constructor: Function): void;
-        protected static injectCoatRemissive(this: CoatRemissive, _shader: typeof Shader, _cmpMaterial: ComponentMaterial): void;
+        protected static injectCoatColored(this: CoatColored, _shader: typeof Shader, _cmpMaterial: ComponentMaterial): void;
         protected static injectCoatRemissive(this: CoatRemissive, _shader: typeof Shader, _cmpMaterial: ComponentMaterial): void;
         protected static injectCoatTextured(this: CoatTextured, _shader: typeof Shader, _cmpMaterial: ComponentMaterial): void;
         protected static injectCoatRemissiveTextured(this: CoatRemissiveTextured, _shader: typeof Shader, _cmpMaterial: ComponentMaterial): void;
@@ -2361,14 +2361,6 @@ declare namespace FudgeCore {
 }
 declare namespace FudgeCore {
     /**
-     * Mappings of standard DOM/Browser-Events as passed from a canvas to the viewport
-     */
-    const enum EVENT_KEYBOARD {
-        UP = "\u0192keyup",
-        DOWN = "\u0192keydown",
-        PRESS = "\u0192keypress"
-    }
-    /**
      * The codes sent from a standard english keyboard layout
      */
     enum KEYBOARD_CODE {
@@ -2570,6 +2562,47 @@ declare namespace FudgeCore {
     }
 }
 declare namespace FudgeCore {
+    enum EVENT_TOUCH {
+        /** the standard touchstart, in here for completeness */
+        START = "touchstart",
+        /** the standard touchend, in here for completeness */
+        END = "touchend",
+        /** the standard touchmove, in here for completeness */
+        MOVE = "touchmove",
+        /** the standard touchcancel, in here for completeness */
+        CANCEL = "touchcancel",
+        /** custom event fired when the touches haven't moved outside of the tap radius */
+        TAP = "touchTap",
+        /** custom event fired when the touches have moved outside of the notch radius, details offset and cardinal direction */
+        NOTCH = "touchNotch",
+        /** custom event fired when the touches haven't moved outside of the tap radius for some time */
+        LONG = "touchLong",
+        /** custom event fired when two taps were detected in short succession */
+        DOUBLE = "touchDouble",
+        /** custom event not implemented yet */
+        PINCH = "touchPinch",
+        /** custom event not implemented yet */
+        ROTATE = "touchRotate"
+    }
+    class EventTouch {
+        posStart: Vector2;
+        posNotch: Vector2;
+        radiusTap: number;
+        radiusNotch: number;
+        private target;
+        private posPrev;
+        private moved;
+        private timerDouble;
+        private timerLong;
+        private timeDouble;
+        private timeLong;
+        private time;
+        constructor(_target: EventTarget, _radiusTap?: number, _radiusNotch?: number, _timeDouble?: number, _timerLong?: number);
+        hndEvent: (_event: TouchEvent) => void;
+        private startGesture;
+    }
+}
+declare namespace FudgeCore {
     /**
      * A node managed by {@link Project} that functions as a template for {@link GraphInstance}s
      * @author Jirka Dell'Oro-Friedl, HFU, 2019
@@ -2641,7 +2674,7 @@ declare namespace FudgeCore {
     /**
      * The simplest {@link Coat} providing just a color
      */
-    class CoatRemissive extends Coat {
+    class CoatColored extends Coat {
         color: Color;
         constructor(_color?: Color);
         serialize(): Serialization;
@@ -2652,7 +2685,7 @@ declare namespace FudgeCore {
     /**
      * The simplest {@link Coat} providing just a color
      */
-    class CoatRemissive extends CoatRemissive {
+    class CoatRemissive extends CoatColored {
         specular: number;
         diffuse: number;
         constructor(_color?: Color, _diffuse?: number, _specular?: number);
@@ -2664,7 +2697,7 @@ declare namespace FudgeCore {
     /**
      * A {@link Coat} providing a texture and additional data for texturing
      */
-    class CoatTextured extends CoatRemissive {
+    class CoatTextured extends CoatColored {
         texture: Texture;
         constructor(_color?: Color, _texture?: Texture);
         serialize(): Serialization;
