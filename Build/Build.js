@@ -467,7 +467,7 @@ var Tsentris;
                     };
                 else
                     transformation = {
-                        translation: direction.toVector3()
+                        translation: new Tsentris.ƒ.Vector3(direction.x, -direction.y, 0)
                     };
                 if (transformation != {})
                     move(transformation);
