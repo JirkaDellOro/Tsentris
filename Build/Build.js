@@ -443,13 +443,24 @@ var Tsentris;
         console.log(_event.type);
         switch (_event.type) {
             case Tsentris.ƒ.EVENT_TOUCH.MOVE:
-                Tsentris.camera.rotateY(_event.detail.movement.x * speedCameraRotation);
-                Tsentris.camera.rotateX(_event.detail.movement.y * speedCameraRotation);
+                if (_event.detail.touches.length > 1) {
+                    Tsentris.camera.rotateY(-_event.detail.movement.x * speedCameraRotation);
+                    Tsentris.camera.rotateX(-_event.detail.movement.y * speedCameraRotation);
+                }
+                break;
+            case Tsentris.ƒ.EVENT_TOUCH.NOTCH:
+                let transformation = {};
+                transformation = {
+                    translation: _event.detail.cardinal?.toVector3()
+                };
+                if (transformation != {})
+                    move(transformation);
                 updateDisplay();
                 break;
             default:
                 break;
         }
+        updateDisplay();
     }
     function hndMouseMove(_event) {
         Tsentris.camera.rotateY(_event.movementX * speedCameraRotation);

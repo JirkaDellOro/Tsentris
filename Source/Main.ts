@@ -138,9 +138,19 @@ namespace Tsentris {
 
     switch (_event.type) {
       case ƒ.EVENT_TOUCH.MOVE:
+        if (_event.detail.touches.length > 1) {
+          camera.rotateY(-_event.detail.movement!.x * speedCameraRotation);
+          camera.rotateX(-_event.detail.movement!.y * speedCameraRotation);
+        }
+        break;
+      case ƒ.EVENT_TOUCH.NOTCH:
+        let transformation: Transformation = {};
+        transformation = {
+          translation: _event.detail.cardinal?.toVector3()
+        };
 
-        camera.rotateY(_event.detail.movement!.x * speedCameraRotation);
-        camera.rotateX(_event.detail.movement!.y * speedCameraRotation);
+        if (transformation != {})
+          move(transformation);
 
         updateDisplay();
         break;
@@ -148,6 +158,7 @@ namespace Tsentris {
       default:
         break;
     }
+    updateDisplay();
   }
 
   function hndMouseMove(_event: MouseEvent): void {
