@@ -443,8 +443,8 @@ var Tsentris;
         console.log(_event.type);
         switch (_event.type) {
             case Tsentris.ƒ.EVENT_TOUCH.MOVE:
-                Tsentris.camera.rotateY(_event.detail.offset.x * speedCameraRotation);
-                Tsentris.camera.rotateX(_event.detail.offset.y * speedCameraRotation);
+                Tsentris.camera.rotateY(_event.detail.movement.x * speedCameraRotation);
+                Tsentris.camera.rotateX(_event.detail.movement.y * speedCameraRotation);
                 updateDisplay();
                 break;
             default:

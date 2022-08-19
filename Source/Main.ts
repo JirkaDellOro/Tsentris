@@ -135,12 +135,12 @@ namespace Tsentris {
   function hndTouch(_event: CustomEvent<ƒ.EventTouchDetail>): void {
     _event.preventDefault();
     console.log(_event.type);
-    
+
     switch (_event.type) {
       case ƒ.EVENT_TOUCH.MOVE:
 
-        camera.rotateY(_event.detail.offset!.x * speedCameraRotation);
-        camera.rotateX(_event.detail.offset!.y * speedCameraRotation);
+        camera.rotateY(_event.detail.movement!.x * speedCameraRotation);
+        camera.rotateX(_event.detail.movement!.y * speedCameraRotation);
 
         updateDisplay();
         break;
