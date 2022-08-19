@@ -157,13 +157,13 @@ namespace Tsentris {
 
         if (_event.detail.touches.length == 1)
           transformation = {
-            translation: _event.detail.cardinal!.toVector3()
+            translation: direction
           };
         else
           transformation = {
-            rotation: new ƒ.Vector3(direction.y, direction.x, 0)
+            rotation: new ƒ.Vector3(90 * direction.y, -90 * direction.x, 0)
           }
-          
+
         if (transformation != {})
           move(transformation);
 
