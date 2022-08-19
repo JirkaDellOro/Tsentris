@@ -339,6 +339,7 @@ var Tsentris;
     let viewport;
     let speedCameraRotation = 0.2;
     let speedCameraTranslation = 0.02;
+    let touchRotation = false;
     function hndLoad(_event) {
         const canvas = document.querySelector("canvas");
         Tsentris.args = new URLSearchParams(location.search);
@@ -446,25 +447,27 @@ var Tsentris;
         if (Tsentris.ƒ.Time.game.hasTimers())
             return;
         switch (_event.type) {
+            case Tsentris.ƒ.EVENT_TOUCH.TAP:
+                touchRotation = !touchRotation;
+                break;
             case Tsentris.ƒ.EVENT_TOUCH.MOVE:
-                if (_event.detail.touches.length > 2) {
+                if (_event.detail.touches.length > 1) {
                     Tsentris.camera.rotateY(-_event.detail.movement.x * speedCameraRotation);
                     Tsentris.camera.rotateX(-_event.detail.movement.y * speedCameraRotation);
                 }
                 break;
             case Tsentris.ƒ.EVENT_TOUCH.NOTCH:
-                if (_event.detail.touches.length > 2)
+                if (_event.detail.touches.length > 1)
                     break;
-                let direction = _event.detail.cardinal.toVector3();
-                direction.y *= -1;
+                let direction = _event.detail.cardinal;
                 let transformation = {};
-                if (_event.detail.touches.length == 1)
+                if (touchRotation)
                     transformation = {
-                        translation: direction
+                        rotation: new Tsentris.ƒ.Vector3(90 * direction.y, 90 * direction.x, 0)
                     };
                 else
                     transformation = {
-                        rotation: new Tsentris.ƒ.Vector3(-90 * direction.y, 90 * direction.x, 0)
+                        translation: direction.toVector3()
                     };
                 if (transformation != {})
                     move(transformation);

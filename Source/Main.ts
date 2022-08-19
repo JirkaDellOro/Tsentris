@@ -18,6 +18,7 @@ namespace Tsentris {
   let viewport: ƒ.Viewport;
   let speedCameraRotation: number = 0.2;
   let speedCameraTranslation: number = 0.02;
+  let touchRotation: boolean = false;
 
   function hndLoad(_event: Event): void {
     const canvas: HTMLCanvasElement = document.querySelector("canvas")!;
@@ -141,28 +142,30 @@ namespace Tsentris {
       return;
 
     switch (_event.type) {
+      case ƒ.EVENT_TOUCH.TAP:
+        touchRotation = !touchRotation;
+        break;
       case ƒ.EVENT_TOUCH.MOVE:
-        if (_event.detail.touches.length > 2) {
+        if (_event.detail.touches.length > 1) {
           camera.rotateY(-_event.detail.movement!.x * speedCameraRotation);
           camera.rotateX(-_event.detail.movement!.y * speedCameraRotation);
         }
         break;
       case ƒ.EVENT_TOUCH.NOTCH:
-        if (_event.detail.touches.length > 2)
+        if (_event.detail.touches.length > 1)
           break;
 
-        let direction: ƒ.Vector3 = _event.detail.cardinal!.toVector3();
-        direction.y *= -1;
+        let direction: ƒ.Vector2 = _event.detail.cardinal!;
         let transformation: Transformation = {};
 
-        if (_event.detail.touches.length == 1)
+        if (touchRotation)
           transformation = {
-            translation: direction
-          };
+            rotation: new ƒ.Vector3(90 * direction.y, 90 * direction.x, 0)
+          }
         else
           transformation = {
-            rotation: new ƒ.Vector3(-90 * direction.y, 90 * direction.x, 0)
-          }
+            translation: direction.toVector3()
+          };
 
         if (transformation != {})
           move(transformation);
