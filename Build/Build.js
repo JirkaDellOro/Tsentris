@@ -368,9 +368,10 @@ var Tsentris;
         // viewport.activateWheelEvent(ƒ.EVENT_WHEEL.WHEEL, true);
         viewport.canvas.addEventListener("mousemove", hndMouseMove);
         viewport.canvas.addEventListener("wheel", hndWheelMove);
-        viewport.canvas.addEventListener(Tsentris.ƒ.EVENT_TOUCH.TAP, hndTouch);
-        viewport.canvas.addEventListener(Tsentris.ƒ.EVENT_TOUCH.DOUBLE, hndTouch);
-        viewport.canvas.addEventListener(Tsentris.ƒ.EVENT_TOUCH.MOVE, hndTouch);
+        console.log(new Tsentris.ƒ.EventTouch(document));
+        document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.TAP, hndTouch);
+        document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.DOUBLE, hndTouch);
+        document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.MOVE, hndTouch);
         Tsentris.game.appendChild(control);
         if (Tsentris.args.get("test"))
             Tsentris.startTests();
@@ -437,7 +438,8 @@ var Tsentris;
     Tsentris.updateDisplay = updateDisplay;
     //#region Interaction
     function hndTouch(_event) {
-        console.log(_event);
+        _event.preventDefault();
+        console.log(_event.type);
     }
     function hndMouseMove(_event) {
         Tsentris.camera.rotateY(_event.movementX * speedCameraRotation);
@@ -778,7 +780,7 @@ var Tsentris;
         ];
         setupGrid(setups);
         Tsentris.startRandomFragment();
-        Tsentris.ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, rotateY);
+        Tsentris.ƒ.Loop.addEventListener("loopFrame" /* ƒ.EVENT.LOOP_FRAME */, rotateY);
         Tsentris.ƒ.Loop.start();
         // ƒ.Time.game.setTimer(4, 0, rotateY);
         function rotateY(_event) {
