@@ -441,6 +441,8 @@ var Tsentris;
     function hndTouch(_event) {
         _event.preventDefault();
         console.log(_event.type);
+        if (Tsentris.ƒ.Time.game.hasTimers())
+            return;
         switch (_event.type) {
             case Tsentris.ƒ.EVENT_TOUCH.MOVE:
                 if (_event.detail.touches.length > 1) {
@@ -451,13 +453,17 @@ var Tsentris;
             case Tsentris.ƒ.EVENT_TOUCH.NOTCH:
                 if (_event.detail.touches.length > 1)
                     break;
+                _event.detail.cardinal.y *= -1;
                 let transformation = {};
                 transformation = {
-                    translation: _event.detail.cardinal?.toVector3()
+                    translation: _event.detail.cardinal.toVector3()
                 };
                 if (transformation != {})
                     move(transformation);
                 updateDisplay();
+                break;
+            case Tsentris.ƒ.EVENT_TOUCH.DOUBLE:
+                dropShape();
                 break;
             default:
                 break;

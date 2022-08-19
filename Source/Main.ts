@@ -135,6 +135,8 @@ namespace Tsentris {
   function hndTouch(_event: CustomEvent<ƒ.EventTouchDetail>): void {
     _event.preventDefault();
     console.log(_event.type);
+    if (ƒ.Time.game.hasTimers())
+      return;
 
     switch (_event.type) {
       case ƒ.EVENT_TOUCH.MOVE:
@@ -147,9 +149,10 @@ namespace Tsentris {
         if (_event.detail.touches.length > 1)
           break;
 
+        _event.detail.cardinal!.y *= -1;
         let transformation: Transformation = {};
         transformation = {
-          translation: _event.detail.cardinal?.toVector3()
+          translation: _event.detail.cardinal!.toVector3()
         };
 
         if (transformation != {})
@@ -158,6 +161,9 @@ namespace Tsentris {
         updateDisplay();
         break;
 
+      case ƒ.EVENT_TOUCH.DOUBLE:
+          dropShape();
+        break;
       default:
         break;
     }
