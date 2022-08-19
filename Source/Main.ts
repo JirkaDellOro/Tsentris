@@ -144,6 +144,9 @@ namespace Tsentris {
         }
         break;
       case ƒ.EVENT_TOUCH.NOTCH:
+        if (_event.detail.touches.length > 1)
+          break;
+
         let transformation: Transformation = {};
         transformation = {
           translation: _event.detail.cardinal?.toVector3()
@@ -178,7 +181,7 @@ namespace Tsentris {
       return;
 
     if (_event.code == ƒ.KEYBOARD_CODE.SPACE) {
-      dropFragment();
+      dropShape();
     }
 
     let transformation: Transformation = {}; //  = Control.transformations[_event.code];
@@ -227,7 +230,7 @@ namespace Tsentris {
     updateDisplay();
   }
 
-  async function dropFragment(): Promise<void> {
+  async function dropShape(): Promise<void> {
     if (!control.isConnected()) {
       callToAction("CONNECT TO EXISTING CUBES!");
       return;

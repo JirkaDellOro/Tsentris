@@ -449,6 +449,8 @@ var Tsentris;
                 }
                 break;
             case Tsentris.ƒ.EVENT_TOUCH.NOTCH:
+                if (_event.detail.touches.length > 1)
+                    break;
                 let transformation = {};
                 transformation = {
                     translation: _event.detail.cardinal?.toVector3()
@@ -475,7 +477,7 @@ var Tsentris;
         if (Tsentris.ƒ.Time.game.hasTimers())
             return;
         if (_event.code == Tsentris.ƒ.KEYBOARD_CODE.SPACE) {
-            dropFragment();
+            dropShape();
         }
         let transformation = {}; //  = Control.transformations[_event.code];
         if (Tsentris.ƒ.Keyboard.isPressedOne([Tsentris.ƒ.KEYBOARD_CODE.SHIFT_LEFT, Tsentris.ƒ.KEYBOARD_CODE.SHIFT_RIGHT, Tsentris.ƒ.KEYBOARD_CODE.CTRL_LEFT, Tsentris.ƒ.KEYBOARD_CODE.CTRL_RIGHT]))
@@ -514,7 +516,7 @@ var Tsentris;
         updateDisplay();
     }
     Tsentris.startRandomFragment = startRandomFragment;
-    async function dropFragment() {
+    async function dropShape() {
         if (!control.isConnected()) {
             callToAction("CONNECT TO EXISTING CUBES!");
             return;
