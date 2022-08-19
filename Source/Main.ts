@@ -54,7 +54,7 @@ namespace Tsentris {
     // viewport.activateWheelEvent(ƒ.EVENT_WHEEL.WHEEL, true);
     viewport.canvas.addEventListener("mousemove", hndMouseMove);
     viewport.canvas.addEventListener("wheel", hndWheelMove);
-    console.log(new ƒ.EventTouch(document));
+    console.log(new ƒ.EventTouch(document, 5, 20));
     document.addEventListener(ƒ.EVENT_TOUCH.TAP, <EventListener>hndTouch);
     document.addEventListener(ƒ.EVENT_TOUCH.DOUBLE, <EventListener>hndTouch);
     document.addEventListener(ƒ.EVENT_TOUCH.MOVE, <EventListener>hndTouch);
@@ -323,7 +323,7 @@ namespace Tsentris {
     move.translation!.scale(1 / animationSteps);
     move.rotation!.scale(1 / animationSteps);
 
-    ƒ.Time.game.setTimer(20, animationSteps, function (_event: ƒ.EventTimer): void {
+    ƒ.Time.game.setTimer(10, animationSteps, function (_event: ƒ.EventTimer): void {
       control.move(move);
       updateDisplay();
     });

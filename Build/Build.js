@@ -369,7 +369,7 @@ var Tsentris;
         // viewport.activateWheelEvent(ƒ.EVENT_WHEEL.WHEEL, true);
         viewport.canvas.addEventListener("mousemove", hndMouseMove);
         viewport.canvas.addEventListener("wheel", hndWheelMove);
-        console.log(new Tsentris.ƒ.EventTouch(document));
+        console.log(new Tsentris.ƒ.EventTouch(document, 5, 20));
         document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.TAP, hndTouch);
         document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.DOUBLE, hndTouch);
         document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.MOVE, hndTouch);
@@ -600,7 +600,7 @@ var Tsentris;
             return;
         move.translation.scale(1 / animationSteps);
         move.rotation.scale(1 / animationSteps);
-        Tsentris.ƒ.Time.game.setTimer(20, animationSteps, function (_event) {
+        Tsentris.ƒ.Time.game.setTimer(10, animationSteps, function (_event) {
             control.move(move);
             updateDisplay();
         });
