@@ -19,6 +19,9 @@ namespace Tsentris {
   let speedCameraRotation: number = 0.2;
   let speedCameraTranslation: number = 0.02;
   let touchRotation: boolean = false;
+  let touchEventDispatcher: ƒ.TouchEventDispatcher;
+  let touchNotchTranslation: number = 40;
+  let touchNotchRotation: number = 80;
 
   function hndLoad(_event: Event): void {
     const canvas: HTMLCanvasElement = document.querySelector("canvas")!;
@@ -54,7 +57,8 @@ namespace Tsentris {
     // viewport.activateWheelEvent(ƒ.EVENT_WHEEL.WHEEL, true);
     viewport.canvas.addEventListener("mousemove", hndMouseMove);
     viewport.canvas.addEventListener("wheel", hndWheelMove);
-    console.log(new ƒ.EventTouch(document, 5, 30));
+
+    touchEventDispatcher = new ƒ.TouchEventDispatcher(document, 5, touchNotchTranslation);
     document.addEventListener(ƒ.EVENT_TOUCH.TAP, <EventListener>hndTouch);
     document.addEventListener(ƒ.EVENT_TOUCH.DOUBLE, <EventListener>hndTouch);
     document.addEventListener(ƒ.EVENT_TOUCH.MOVE, <EventListener>hndTouch);
@@ -93,7 +97,10 @@ namespace Tsentris {
   function end(): void {
     let domOver: HTMLElement = document.querySelector("div#Over")!;
     domOver.style.visibility = "visible";
-    window.removeEventListener("keydown", hndKeyDown);  // activate when user starts...
+    window.removeEventListener("keydown", hndKeyDown);
+    document.removeEventListener(ƒ.EVENT_TOUCH.TAP, <EventListener>hndTouch);
+    document.removeEventListener(ƒ.EVENT_TOUCH.DOUBLE, <EventListener>hndTouch);
+    document.removeEventListener(ƒ.EVENT_TOUCH.NOTCH, <EventListener>hndTouch);
     setState(GAME_STATE.OVER);
   }
 
@@ -144,7 +151,8 @@ namespace Tsentris {
     switch (_event.type) {
       case ƒ.EVENT_TOUCH.TAP:
         touchRotation = !touchRotation;
-        camera.cmpCamera.clrBackground = ƒ.Color.CSS(touchRotation ? "grey" : "white");
+        camera.cmpCamera.clrBackground = ƒ.Color.CSS(touchRotation ? "black" : "white");
+        touchEventDispatcher.radiusNotch = touchRotation ? touchNotchRotation : touchNotchTranslation;
         break;
       case ƒ.EVENT_TOUCH.MOVE:
         if (_event.detail.touches.length > 1) {

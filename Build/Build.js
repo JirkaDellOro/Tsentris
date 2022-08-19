@@ -340,6 +340,9 @@ var Tsentris;
     let speedCameraRotation = 0.2;
     let speedCameraTranslation = 0.02;
     let touchRotation = false;
+    let touchEventDispatcher;
+    let touchNotchTranslation = 40;
+    let touchNotchRotation = 80;
     function hndLoad(_event) {
         const canvas = document.querySelector("canvas");
         Tsentris.args = new URLSearchParams(location.search);
@@ -369,7 +372,7 @@ var Tsentris;
         // viewport.activateWheelEvent(ƒ.EVENT_WHEEL.WHEEL, true);
         viewport.canvas.addEventListener("mousemove", hndMouseMove);
         viewport.canvas.addEventListener("wheel", hndWheelMove);
-        console.log(new Tsentris.ƒ.EventTouch(document, 5, 30));
+        touchEventDispatcher = new Tsentris.ƒ.TouchEventDispatcher(document, 5, touchNotchTranslation);
         document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.TAP, hndTouch);
         document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.DOUBLE, hndTouch);
         document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.MOVE, hndTouch);
@@ -402,7 +405,10 @@ var Tsentris;
     function end() {
         let domOver = document.querySelector("div#Over");
         domOver.style.visibility = "visible";
-        window.removeEventListener("keydown", hndKeyDown); // activate when user starts...
+        window.removeEventListener("keydown", hndKeyDown);
+        document.removeEventListener(Tsentris.ƒ.EVENT_TOUCH.TAP, hndTouch);
+        document.removeEventListener(Tsentris.ƒ.EVENT_TOUCH.DOUBLE, hndTouch);
+        document.removeEventListener(Tsentris.ƒ.EVENT_TOUCH.NOTCH, hndTouch);
         setState(GAME_STATE.OVER);
     }
     async function waitForKeyPress(_code) {
@@ -449,7 +455,8 @@ var Tsentris;
         switch (_event.type) {
             case Tsentris.ƒ.EVENT_TOUCH.TAP:
                 touchRotation = !touchRotation;
-                Tsentris.camera.cmpCamera.clrBackground = Tsentris.ƒ.Color.CSS(touchRotation ? "grey" : "white");
+                Tsentris.camera.cmpCamera.clrBackground = Tsentris.ƒ.Color.CSS(touchRotation ? "black" : "white");
+                touchEventDispatcher.radiusNotch = touchRotation ? touchNotchRotation : touchNotchTranslation;
                 break;
             case Tsentris.ƒ.EVENT_TOUCH.MOVE:
                 if (_event.detail.touches.length > 1) {
