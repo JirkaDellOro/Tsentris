@@ -368,6 +368,9 @@ var Tsentris;
         // viewport.activateWheelEvent(ƒ.EVENT_WHEEL.WHEEL, true);
         viewport.canvas.addEventListener("mousemove", hndMouseMove);
         viewport.canvas.addEventListener("wheel", hndWheelMove);
+        viewport.canvas.addEventListener(Tsentris.ƒ.EVENT_TOUCH.TAP, hndTouch);
+        viewport.canvas.addEventListener(Tsentris.ƒ.EVENT_TOUCH.DOUBLE, hndTouch);
+        viewport.canvas.addEventListener(Tsentris.ƒ.EVENT_TOUCH.MOVE, hndTouch);
         Tsentris.game.appendChild(control);
         if (Tsentris.args.get("test"))
             Tsentris.startTests();
@@ -433,15 +436,12 @@ var Tsentris;
     }
     Tsentris.updateDisplay = updateDisplay;
     //#region Interaction
+    function hndTouch(_event) {
+        console.log(_event);
+    }
     function hndMouseMove(_event) {
-        // let segmentBefore: number = camera.getSegmentY();
         Tsentris.camera.rotateY(_event.movementX * speedCameraRotation);
         Tsentris.camera.rotateX(_event.movementY * speedCameraRotation);
-        // let segmentAfter: number = camera.getSegmentY();
-        // if (segmentAfter - segmentBefore) {
-        // if (!ƒ.Time.game.hasTimers())
-        //   control.rotateToSegment(camera.getSegmentY());
-        // }
         updateDisplay();
     }
     function hndWheelMove(_event) {
