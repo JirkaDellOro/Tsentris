@@ -98,10 +98,12 @@ namespace Tsentris {
 
   async function waitForKeyPress(_code: ƒ.KEYBOARD_CODE): Promise<void> {
     return new Promise(_resolve => {
-      window.addEventListener("keydown", hndKeyDown);
-      function hndKeyDown(_event: KeyboardEvent): void {
-        if (_event.code == _code) {
-          window.removeEventListener("keydown", hndKeyDown);
+      window.addEventListener("keydown", hndEvent);
+      window.addEventListener(ƒ.EVENT_TOUCH.LONG, hndEvent);
+      function hndEvent(_event: KeyboardEvent | CustomEvent<ƒ.EventTouchDetail> | Event): void {
+        if ((<KeyboardEvent>_event).code == _code || _event.type == ƒ.EVENT_TOUCH.LONG) {
+          window.removeEventListener("keydown", hndEvent);
+          window.removeEventListener(ƒ.EVENT_TOUCH.LONG, hndEvent);
           _resolve();
         }
       }
@@ -140,21 +142,28 @@ namespace Tsentris {
 
     switch (_event.type) {
       case ƒ.EVENT_TOUCH.MOVE:
-        if (_event.detail.touches.length > 1) {
+        if (_event.detail.touches.length > 2) {
           camera.rotateY(-_event.detail.movement!.x * speedCameraRotation);
           camera.rotateX(-_event.detail.movement!.y * speedCameraRotation);
         }
         break;
       case ƒ.EVENT_TOUCH.NOTCH:
-        if (_event.detail.touches.length > 1)
+        if (_event.detail.touches.length > 2)
           break;
 
-        _event.detail.cardinal!.y *= -1;
+        let direction: ƒ.Vector3 = _event.detail.cardinal!.toVector3();
+        direction.y *= -1;
         let transformation: Transformation = {};
-        transformation = {
-          translation: _event.detail.cardinal!.toVector3()
-        };
 
+        if (_event.detail.touches.length == 1)
+          transformation = {
+            translation: _event.detail.cardinal!.toVector3()
+          };
+        else
+          transformation = {
+            rotation: new ƒ.Vector3(direction.y, direction.x, 0)
+          }
+          
         if (transformation != {})
           move(transformation);
 
@@ -162,7 +171,7 @@ namespace Tsentris {
         break;
 
       case ƒ.EVENT_TOUCH.DOUBLE:
-          dropShape();
+        dropShape();
         break;
       default:
         break;

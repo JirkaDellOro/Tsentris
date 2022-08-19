@@ -406,10 +406,12 @@ var Tsentris;
     }
     async function waitForKeyPress(_code) {
         return new Promise(_resolve => {
-            window.addEventListener("keydown", hndKeyDown);
-            function hndKeyDown(_event) {
-                if (_event.code == _code) {
-                    window.removeEventListener("keydown", hndKeyDown);
+            window.addEventListener("keydown", hndEvent);
+            window.addEventListener(Tsentris.ƒ.EVENT_TOUCH.LONG, hndEvent);
+            function hndEvent(_event) {
+                if (_event.code == _code || _event.type == Tsentris.ƒ.EVENT_TOUCH.LONG) {
+                    window.removeEventListener("keydown", hndEvent);
+                    window.removeEventListener(Tsentris.ƒ.EVENT_TOUCH.LONG, hndEvent);
                     _resolve();
                 }
             }
@@ -445,19 +447,25 @@ var Tsentris;
             return;
         switch (_event.type) {
             case Tsentris.ƒ.EVENT_TOUCH.MOVE:
-                if (_event.detail.touches.length > 1) {
+                if (_event.detail.touches.length > 2) {
                     Tsentris.camera.rotateY(-_event.detail.movement.x * speedCameraRotation);
                     Tsentris.camera.rotateX(-_event.detail.movement.y * speedCameraRotation);
                 }
                 break;
             case Tsentris.ƒ.EVENT_TOUCH.NOTCH:
-                if (_event.detail.touches.length > 1)
+                if (_event.detail.touches.length > 2)
                     break;
-                _event.detail.cardinal.y *= -1;
+                let direction = _event.detail.cardinal.toVector3();
+                direction.y *= -1;
                 let transformation = {};
-                transformation = {
-                    translation: _event.detail.cardinal.toVector3()
-                };
+                if (_event.detail.touches.length == 1)
+                    transformation = {
+                        translation: _event.detail.cardinal.toVector3()
+                    };
+                else
+                    transformation = {
+                        rotation: new Tsentris.ƒ.Vector3(direction.y, direction.x, 0)
+                    };
                 if (transformation != {})
                     move(transformation);
                 updateDisplay();
