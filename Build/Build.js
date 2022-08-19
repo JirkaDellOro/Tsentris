@@ -678,14 +678,14 @@ var Tsentris;
         }
         showCombo(_combo, _iCombo) {
             let pointsCombo = 0;
-            let pointsCube = Math.pow(2, _iCombo - 1);
+            let pointsCube = _iCombo; // Math.pow(2, _iCombo - 1);
             for (let element of _combo) {
                 this.create(element, pointsCube);
                 pointsCombo += pointsCube;
                 pointsCube *= 2;
             }
             this.score += pointsCombo;
-            let text = _iCombo + ". combo of " + _combo.length + " cubes ⇨ " + pointsCombo;
+            let text = `${_iCombo} x combo of ${_combo.length} worth ${Math.pow(2, _combo.length) - 1} ⇨ ${pointsCombo}`;
             this.addLineCalc(text, _combo[0].cube.getColor().getCSS());
             this.domScore.textContent = "Score: " + this.score;
             Tsentris.ƒ.Debug.log(text);

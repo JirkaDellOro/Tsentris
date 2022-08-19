@@ -47,14 +47,14 @@ namespace Tsentris {
 
     public showCombo(_combo: GridElement[], _iCombo: number): void {
       let pointsCombo: number = 0;
-      let pointsCube: number = Math.pow(2, _iCombo - 1);
+      let pointsCube: number = _iCombo; // Math.pow(2, _iCombo - 1);
       for (let element of _combo) {
         this.create(element, pointsCube);
         pointsCombo += pointsCube;
         pointsCube *= 2;
       }
       this.score += pointsCombo;
-      let text: string = _iCombo + ". combo of " + _combo.length + " cubes ⇨ " + pointsCombo;
+      let text: string = `${_iCombo} x combo of ${_combo.length} worth ${Math.pow(2, _combo.length)-1} ⇨ ${pointsCombo}`;
       this.addLineCalc(text, _combo[0].cube.getColor().getCSS());
       this.domScore.textContent = "Score: " + this.score;
       ƒ.Debug.log(text);
