@@ -81,14 +81,16 @@ namespace Tsentris {
     setState(GAME_STATE.MENU);
     grid.push(ƒ.Vector3.ZERO(), new GridElement(new Cube(CUBE_TYPE.BLACK, ƒ.Vector3.ZERO())));
     startRandomFragment();
-    ƒ.Debug.log("Wait for space");
+    ƒ.Debug.log("Wait for space or longpress");
     await waitForKeyPress(ƒ.KEYBOARD_CODE.SPACE);
-    ƒ.Debug.log("Space pressed");
+    ƒ.Debug.log("Game starts");
     let domMenu: HTMLElement = document.querySelector("div#Menu")!;
     domMenu.style.visibility = "hidden";
     window.addEventListener("keydown", hndKeyDown);  // activate when user starts...
     startCountDown();
     setState(GAME_STATE.PLAY);
+    audioInit();
+    audioStartMusic();
   }
 
   function end(): void {
@@ -206,16 +208,20 @@ namespace Tsentris {
 
     if (_event.code == ƒ.KEYBOARD_CODE.SPACE) {
       dropShape();
+      return;
     }
 
     let transformation: Transformation = {}; //  = Control.transformations[_event.code];
-    if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SHIFT_LEFT, ƒ.KEYBOARD_CODE.SHIFT_RIGHT, ƒ.KEYBOARD_CODE.CTRL_LEFT, ƒ.KEYBOARD_CODE.CTRL_RIGHT]))
+    if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SHIFT_LEFT, ƒ.KEYBOARD_CODE.SHIFT_RIGHT, ƒ.KEYBOARD_CODE.CTRL_LEFT, ƒ.KEYBOARD_CODE.CTRL_RIGHT])) {
       transformation = {
         rotation: new ƒ.Vector3(
           -90 * ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.ARROW_UP, ƒ.KEYBOARD_CODE.W], [ƒ.KEYBOARD_CODE.ARROW_DOWN, ƒ.KEYBOARD_CODE.S]),
           90 * ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.ARROW_RIGHT, ƒ.KEYBOARD_CODE.D], [ƒ.KEYBOARD_CODE.ARROW_LEFT, ƒ.KEYBOARD_CODE.A]),
           0)
       };
+      if (transformation.rotation?.equals(ƒ.Vector3.ZERO()))
+        return;
+    }
     else
       transformation = {
         translation: new ƒ.Vector3(
@@ -257,6 +263,7 @@ namespace Tsentris {
   async function dropShape(): Promise<void> {
     if (!control.isConnected()) {
       callToAction("CONNECT TO EXISTING CUBES!");
+      audioEffect("nodrop");
       return;
     }
     points.clearCalc();
@@ -273,6 +280,9 @@ namespace Tsentris {
       else
         callToAction("LARGER COMBOS SCORE HIGHER!");
     }
+    else
+      audioEffect("drop");
+
     startRandomFragment();
     updateDisplay();
   }
@@ -298,6 +308,7 @@ namespace Tsentris {
     for (let combo of _combos.found)
       if (combo.length > 2) {
         iCombo++;
+        audioCombo(_iCombo + iCombo);
         points.showCombo(combo, _iCombo + iCombo);
         for (let shrink: number = Math.PI - Math.asin(0.9); shrink >= 0; shrink -= 0.2) {
           for (let element of combo) {
@@ -323,8 +334,15 @@ namespace Tsentris {
       translation: _transformation.translation ? ƒ.Vector3.TRANSFORMATION(_transformation.translation, mtxControl) : new ƒ.Vector3()
     };
 
-    if (control.checkCollisions(move).length > 0)
+    if (control.checkCollisions(move).length > 0) {
+      audioEffect("collision")
       return;
+    }
+
+    if (_transformation.translation)
+      audioEffect("translate");
+    if (_transformation.rotation)
+      audioEffect("rotate");
 
     move.translation!.scale(1 / animationSteps);
     move.rotation!.scale(1 / animationSteps);

@@ -1,6 +1,55 @@
 "use strict";
 var Tsentris;
 (function (Tsentris) {
+    let audio = {};
+    let combo = [];
+    let cmpEffect;
+    let cmpCombo;
+    function audioInit() {
+        let cmpListener = new Tsentris.ƒ.ComponentAudioListener();
+        Tsentris.game.addComponent(cmpListener);
+        Tsentris.ƒ.AudioManager.default.listenWith(cmpListener);
+        Tsentris.ƒ.AudioManager.default.listenTo(Tsentris.game);
+        let paths = {
+            music: "Music.mp3",
+            translate: "Translate.mp3", rotate: "Rotate.mp3",
+            drop: "Drop.mp3", nodrop: "Nodrop.mp3",
+            collision: "Collision.mp3"
+        };
+        for (let key in paths)
+            audio[key] = new Tsentris.ƒ.Audio("Audio/" + paths[key]);
+        for (let iCombo = 1; iCombo < 8; iCombo++)
+            combo[iCombo] = new Tsentris.ƒ.Audio("Audio/Combo0" + iCombo + ".mp3");
+        cmpEffect = new Tsentris.ƒ.ComponentAudio();
+        Tsentris.game.addComponent(cmpEffect);
+        cmpCombo = new Tsentris.ƒ.ComponentAudio();
+        Tsentris.game.addComponent(cmpCombo);
+    }
+    Tsentris.audioInit = audioInit;
+    function audioStartMusic() {
+        let cmpMusic = new Tsentris.ƒ.ComponentAudio(audio.music, true, true);
+        Tsentris.game.addComponent(cmpMusic);
+    }
+    Tsentris.audioStartMusic = audioStartMusic;
+    function audioEffect(_effect) {
+        let a = audio[_effect];
+        if (!a)
+            return;
+        cmpEffect.setAudio(a);
+        cmpEffect.play(true);
+    }
+    Tsentris.audioEffect = audioEffect;
+    function audioCombo(_iCombo) {
+        let a = combo[_iCombo];
+        if (!a)
+            return;
+        cmpCombo.setAudio(a);
+        cmpCombo.play(true);
+    }
+    Tsentris.audioCombo = audioCombo;
+})(Tsentris || (Tsentris = {}));
+var Tsentris;
+(function (Tsentris) {
     var ƒ = FudgeCore;
     class CameraOrbit extends ƒ.Node {
         maxRotX = 75;
@@ -389,14 +438,16 @@ var Tsentris;
         setState(GAME_STATE.MENU);
         Tsentris.grid.push(Tsentris.ƒ.Vector3.ZERO(), new Tsentris.GridElement(new Tsentris.Cube(Tsentris.CUBE_TYPE.BLACK, Tsentris.ƒ.Vector3.ZERO())));
         startRandomFragment();
-        Tsentris.ƒ.Debug.log("Wait for space");
+        Tsentris.ƒ.Debug.log("Wait for space or longpress");
         await waitForKeyPress(Tsentris.ƒ.KEYBOARD_CODE.SPACE);
-        Tsentris.ƒ.Debug.log("Space pressed");
+        Tsentris.ƒ.Debug.log("Game starts");
         let domMenu = document.querySelector("div#Menu");
         domMenu.style.visibility = "hidden";
         window.addEventListener("keydown", hndKeyDown); // activate when user starts...
         startCountDown();
         setState(GAME_STATE.PLAY);
+        Tsentris.audioInit();
+        Tsentris.audioStartMusic();
     }
     function end() {
         let domOver = document.querySelector("div#Over");
@@ -499,12 +550,16 @@ var Tsentris;
             return;
         if (_event.code == Tsentris.ƒ.KEYBOARD_CODE.SPACE) {
             dropShape();
+            return;
         }
         let transformation = {}; //  = Control.transformations[_event.code];
-        if (Tsentris.ƒ.Keyboard.isPressedOne([Tsentris.ƒ.KEYBOARD_CODE.SHIFT_LEFT, Tsentris.ƒ.KEYBOARD_CODE.SHIFT_RIGHT, Tsentris.ƒ.KEYBOARD_CODE.CTRL_LEFT, Tsentris.ƒ.KEYBOARD_CODE.CTRL_RIGHT]))
+        if (Tsentris.ƒ.Keyboard.isPressedOne([Tsentris.ƒ.KEYBOARD_CODE.SHIFT_LEFT, Tsentris.ƒ.KEYBOARD_CODE.SHIFT_RIGHT, Tsentris.ƒ.KEYBOARD_CODE.CTRL_LEFT, Tsentris.ƒ.KEYBOARD_CODE.CTRL_RIGHT])) {
             transformation = {
                 rotation: new Tsentris.ƒ.Vector3(-90 * Tsentris.ƒ.Keyboard.mapToTrit([Tsentris.ƒ.KEYBOARD_CODE.ARROW_UP, Tsentris.ƒ.KEYBOARD_CODE.W], [Tsentris.ƒ.KEYBOARD_CODE.ARROW_DOWN, Tsentris.ƒ.KEYBOARD_CODE.S]), 90 * Tsentris.ƒ.Keyboard.mapToTrit([Tsentris.ƒ.KEYBOARD_CODE.ARROW_RIGHT, Tsentris.ƒ.KEYBOARD_CODE.D], [Tsentris.ƒ.KEYBOARD_CODE.ARROW_LEFT, Tsentris.ƒ.KEYBOARD_CODE.A]), 0)
             };
+            if (transformation.rotation?.equals(Tsentris.ƒ.Vector3.ZERO()))
+                return;
+        }
         else
             transformation = {
                 translation: new Tsentris.ƒ.Vector3(-1 * Tsentris.ƒ.Keyboard.mapToTrit([Tsentris.ƒ.KEYBOARD_CODE.ARROW_LEFT, Tsentris.ƒ.KEYBOARD_CODE.A], [Tsentris.ƒ.KEYBOARD_CODE.ARROW_RIGHT, Tsentris.ƒ.KEYBOARD_CODE.D]), 1 * Tsentris.ƒ.Keyboard.mapToTrit([Tsentris.ƒ.KEYBOARD_CODE.ARROW_UP, Tsentris.ƒ.KEYBOARD_CODE.W], [Tsentris.ƒ.KEYBOARD_CODE.ARROW_DOWN, Tsentris.ƒ.KEYBOARD_CODE.S]), 0)
@@ -540,6 +595,7 @@ var Tsentris;
     async function dropShape() {
         if (!control.isConnected()) {
             callToAction("CONNECT TO EXISTING CUBES!");
+            Tsentris.audioEffect("nodrop");
             return;
         }
         Tsentris.points.clearCalc();
@@ -554,6 +610,8 @@ var Tsentris;
             else
                 callToAction("LARGER COMBOS SCORE HIGHER!");
         }
+        else
+            Tsentris.audioEffect("drop");
         startRandomFragment();
         updateDisplay();
     }
@@ -577,6 +635,7 @@ var Tsentris;
         for (let combo of _combos.found)
             if (combo.length > 2) {
                 iCombo++;
+                Tsentris.audioCombo(_iCombo + iCombo);
                 Tsentris.points.showCombo(combo, _iCombo + iCombo);
                 for (let shrink = Math.PI - Math.asin(0.9); shrink >= 0; shrink -= 0.2) {
                     for (let element of combo) {
@@ -600,8 +659,14 @@ var Tsentris;
             rotation: _transformation.rotation ? Tsentris.ƒ.Vector3.TRANSFORMATION(_transformation.rotation, mtxControl) : new Tsentris.ƒ.Vector3(),
             translation: _transformation.translation ? Tsentris.ƒ.Vector3.TRANSFORMATION(_transformation.translation, mtxControl) : new Tsentris.ƒ.Vector3()
         };
-        if (control.checkCollisions(move).length > 0)
+        if (control.checkCollisions(move).length > 0) {
+            Tsentris.audioEffect("collision");
             return;
+        }
+        if (_transformation.translation)
+            Tsentris.audioEffect("translate");
+        if (_transformation.rotation)
+            Tsentris.audioEffect("rotate");
         move.translation.scale(1 / animationSteps);
         move.rotation.scale(1 / animationSteps);
         Tsentris.ƒ.Time.game.setTimer(10, animationSteps, function (_event) {
@@ -893,3 +958,4 @@ var Tsentris;
         log(`Test success: ${_success}`, _args);
     }
 })(Tsentris || (Tsentris = {}));
+//# sourceMappingURL=Build.js.map
