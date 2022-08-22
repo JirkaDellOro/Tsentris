@@ -53,8 +53,9 @@ namespace Tsentris {
     points = new Points(viewport, document.querySelector("#Score")!, document.querySelector("div#Calculation")!);
 
     // setup event handling
-    viewport.canvas.addEventListener("mousemove", hndMouseMove);
-    viewport.canvas.addEventListener("wheel", hndWheelMove);
+    canvas.addEventListener("mousemove", hndMouseMove);
+    canvas.addEventListener("wheel", hndWheelMove);
+    canvas.addEventListener("click", hndClick);
     touchEventDispatcher = new ƒ.TouchEventDispatcher(document, 5, touchNotchTranslation);
     document.addEventListener(ƒ.EVENT_TOUCH.TAP, <EventListener>hndTouch);
     document.addEventListener(ƒ.EVENT_TOUCH.DOUBLE, <EventListener>hndTouch);
@@ -80,9 +81,9 @@ namespace Tsentris {
   async function start(): Promise<void> {
     setState(GAME_STATE.MENU);
     grid.push(ƒ.Vector3.ZERO(), new GridElement(new Cube(CUBE_TYPE.BLACK, ƒ.Vector3.ZERO())));
-    startRandomFragment();
-    ƒ.Debug.log("Wait for space or longpress");
-    await waitForKeyPress(ƒ.KEYBOARD_CODE.SPACE);
+    startRandomShape();
+    ƒ.Debug.log("Wait for click or longpress");
+    await waitForStart();
     ƒ.Debug.log("Game starts");
     let domMenu: HTMLElement = document.querySelector("div#Menu")!;
     domMenu.style.visibility = "hidden";
@@ -93,7 +94,7 @@ namespace Tsentris {
     audioStartMusic();
   }
 
-  function end(): void {
+  async function end(): Promise<void> {
     let domOver: HTMLElement = document.querySelector("div#Over")!;
     domOver.style.visibility = "visible";
     window.removeEventListener("keydown", hndKeyDown);
@@ -101,18 +102,20 @@ namespace Tsentris {
     document.removeEventListener(ƒ.EVENT_TOUCH.DOUBLE, <EventListener>hndTouch);
     document.removeEventListener(ƒ.EVENT_TOUCH.NOTCH, <EventListener>hndTouch);
     setState(GAME_STATE.OVER);
+    
+    ƒ.Debug.log("Wait for click or longpress");
+    await waitForStart();
+    location.href = ".";
   }
 
-  async function waitForKeyPress(_code: ƒ.KEYBOARD_CODE): Promise<void> {
+  async function waitForStart(): Promise<void> {
     return new Promise(_resolve => {
-      window.addEventListener("keydown", hndEvent);
+      window.addEventListener("click", hndEvent);
       window.addEventListener(ƒ.EVENT_TOUCH.LONG, hndEvent);
-      function hndEvent(_event: KeyboardEvent | CustomEvent<ƒ.EventTouchDetail> | Event): void {
-        if ((<KeyboardEvent>_event).code == _code || _event.type == ƒ.EVENT_TOUCH.LONG) {
-          window.removeEventListener("keydown", hndEvent);
-          window.removeEventListener(ƒ.EVENT_TOUCH.LONG, hndEvent);
-          _resolve();
-        }
+      function hndEvent(_event: MouseEvent | CustomEvent<ƒ.EventTouchDetail> | Event): void {
+        window.removeEventListener("click", hndEvent);
+        window.removeEventListener(ƒ.EVENT_TOUCH.LONG, hndEvent);
+        _resolve();
       }
     });
   }
@@ -190,6 +193,10 @@ namespace Tsentris {
     updateDisplay();
   }
 
+  function hndClick(_event: MouseEvent): void {
+    dropShape();
+  }
+
   function hndMouseMove(_event: MouseEvent): void {
     camera.rotateY(_event.movementX * speedCameraRotation);
     camera.rotateX(_event.movementY * speedCameraRotation);
@@ -238,24 +245,26 @@ namespace Tsentris {
 
   //#endregion
 
-  //#region Start/Drop Fragments
-  export function startRandomFragment(): void {
-    let fragment: Shape = Shape.getRandom();
+  //#region Start/Drop Shapes
+  export function startRandomShape(): void {
+    let shape: Shape = Shape.getRandom();
     let cardinals: ƒ.Vector3[] = Array.from(Grid.cardinals);
     control.mtxLocal.translation = ƒ.Vector3.ZERO();
-    control.setShape(fragment);
+    control.setShape(shape);
     updateDisplay();
+
     let start: Transformation = {};
-    try {
-      do {
-        let index: number = ƒ.random.getIndex(cardinals);
-        let offset: ƒ.Vector3 = cardinals.splice(index, 1)[0];
-        start = { translation: ƒ.Vector3.SCALE(offset, 5), rotation: ƒ.Vector3.ZERO() };
-        // ƒ.Debug.log(control.checkCollisions(start).length );
-      } while (control.checkCollisions(start).length > 0);
-    } catch (_error) {
-      callToAction("GAME OVER");
-    }
+    do {
+      //try to find a position for the new shape, DANGER: potential endless loop
+      let offset: ƒ.Vector3;
+      do
+        offset = new ƒ.Vector3(ƒ.random.getRangeFloored(-1, 2), ƒ.random.getRangeFloored(-1, 2), ƒ.random.getRangeFloored(-1, 2))
+      while (offset.equals(ƒ.Vector3.ZERO()));
+
+      let scale: number = Math.round(5 / offset.magnitude);
+      start = { translation: ƒ.Vector3.SCALE(offset, scale), rotation: ƒ.Vector3.ZERO() };
+    } while (control.checkCollisions(start).length > 0);
+
     control.move(start);
     updateDisplay();
   }
@@ -268,7 +277,7 @@ namespace Tsentris {
     }
     points.clearCalc();
 
-    let dropped: GridElement[] = control.dropFragment();
+    let dropped: GridElement[] = control.dropShape();
     let combos: Combos = new Combos(dropped);
 
     callToAction("CREATE COMBOS OF 3 OR MORE!");
@@ -283,7 +292,7 @@ namespace Tsentris {
     else
       audioEffect("drop");
 
-    startRandomFragment();
+    startRandomShape();
     updateDisplay();
   }
   //#endregion

@@ -37,16 +37,18 @@ div#PointsAnimation>span {
 }
 
 #info {
-    display: inline-block;
-    position: absolute;
-    right: 0.5em;
+  display: inline-block;
+  position: absolute;
+  right: 0.5em;
 }
+
 /* #CallToAction, #LineCalc {
   float: right;
 } */
 #CallToAction {
-  color:red;
+  color: red;
 }
+
 #CallToAction {
   color: white;
   /* text-shadow: none; */
@@ -71,26 +73,34 @@ div#Menu, div#Over {
 
 div#Over {
   visibility: hidden;
-  font-size: 3em;
   text-align: center;
 }
 
-td {
+div#Over>h1 {
+  font-size: 6em;
+}
+
+td, th {
   white-space: nowrap;
   text-align: center;
   padding: 0 1em;
+  border-right: 1px solid white;
 }
+
 th {
   text-align: left;
 }
+
 thead th {
   text-align: center;
+  /* border-bottom: 1px solid white; */
 }
 
 @keyframes example {
   from {
     color: red;
   }
+
   to {
     color: white;
   }

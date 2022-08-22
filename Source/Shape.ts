@@ -6,7 +6,7 @@ namespace Tsentris {
     public position: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
 
     constructor(_shape: number, _position: ƒ.Vector3 = ƒ.Vector3.ZERO()) {
-      super("Fragment-Type" + _shape);
+      super("Shape-Type" + _shape);
       let shape: number[][] = Shape.shapes[_shape];
       for (let position of shape) {
         let type: CUBE_TYPE;
@@ -23,9 +23,9 @@ namespace Tsentris {
     }
 
     public static getRandom(): Shape {
-      let shape: number = Math.floor(Math.random() * Shape.shapes.length);
-      let fragment: Shape = new Shape(shape);
-      return fragment;
+      let index: number = Math.floor(Math.random() * Shape.shapes.length);
+      let shape: Shape = new Shape(index);
+      return shape;
     }
 
     private static getShapeArray(): number[][][] {

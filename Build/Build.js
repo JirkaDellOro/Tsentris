@@ -212,7 +212,7 @@ var Tsentris;
             this.shape.mtxLocal.mutate(save[1]);
             return collisions;
         }
-        dropFragment() {
+        dropShape() {
             let frozen = [];
             for (let cube of this.shape.getChildren()) {
                 let position = cube.mtxWorld.translation;
@@ -415,8 +415,9 @@ var Tsentris;
         Tsentris.ƒ.Debug.log("Viewport", viewport);
         Tsentris.points = new Tsentris.Points(viewport, document.querySelector("#Score"), document.querySelector("div#Calculation"));
         // setup event handling
-        viewport.canvas.addEventListener("mousemove", hndMouseMove);
-        viewport.canvas.addEventListener("wheel", hndWheelMove);
+        canvas.addEventListener("mousemove", hndMouseMove);
+        canvas.addEventListener("wheel", hndWheelMove);
+        canvas.addEventListener("click", hndClick);
         touchEventDispatcher = new Tsentris.ƒ.TouchEventDispatcher(document, 5, touchNotchTranslation);
         document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.TAP, hndTouch);
         document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.DOUBLE, hndTouch);
@@ -437,9 +438,9 @@ var Tsentris;
     async function start() {
         setState(GAME_STATE.MENU);
         Tsentris.grid.push(Tsentris.ƒ.Vector3.ZERO(), new Tsentris.GridElement(new Tsentris.Cube(Tsentris.CUBE_TYPE.BLACK, Tsentris.ƒ.Vector3.ZERO())));
-        startRandomFragment();
-        Tsentris.ƒ.Debug.log("Wait for space or longpress");
-        await waitForKeyPress(Tsentris.ƒ.KEYBOARD_CODE.SPACE);
+        startRandomShape();
+        Tsentris.ƒ.Debug.log("Wait for click or longpress");
+        await waitForStart();
         Tsentris.ƒ.Debug.log("Game starts");
         let domMenu = document.querySelector("div#Menu");
         domMenu.style.visibility = "hidden";
@@ -449,7 +450,7 @@ var Tsentris;
         Tsentris.audioInit();
         Tsentris.audioStartMusic();
     }
-    function end() {
+    async function end() {
         let domOver = document.querySelector("div#Over");
         domOver.style.visibility = "visible";
         window.removeEventListener("keydown", hndKeyDown);
@@ -457,17 +458,18 @@ var Tsentris;
         document.removeEventListener(Tsentris.ƒ.EVENT_TOUCH.DOUBLE, hndTouch);
         document.removeEventListener(Tsentris.ƒ.EVENT_TOUCH.NOTCH, hndTouch);
         setState(GAME_STATE.OVER);
+        Tsentris.ƒ.Debug.log("Wait for click or longpress");
+        await waitForStart();
+        location.href = ".";
     }
-    async function waitForKeyPress(_code) {
+    async function waitForStart() {
         return new Promise(_resolve => {
-            window.addEventListener("keydown", hndEvent);
+            window.addEventListener("click", hndEvent);
             window.addEventListener(Tsentris.ƒ.EVENT_TOUCH.LONG, hndEvent);
             function hndEvent(_event) {
-                if (_event.code == _code || _event.type == Tsentris.ƒ.EVENT_TOUCH.LONG) {
-                    window.removeEventListener("keydown", hndEvent);
-                    window.removeEventListener(Tsentris.ƒ.EVENT_TOUCH.LONG, hndEvent);
-                    _resolve();
-                }
+                window.removeEventListener("click", hndEvent);
+                window.removeEventListener(Tsentris.ƒ.EVENT_TOUCH.LONG, hndEvent);
+                _resolve();
             }
         });
     }
@@ -536,6 +538,9 @@ var Tsentris;
         }
         updateDisplay();
     }
+    function hndClick(_event) {
+        dropShape();
+    }
     function hndMouseMove(_event) {
         Tsentris.camera.rotateY(_event.movementX * speedCameraRotation);
         Tsentris.camera.rotateX(_event.movementY * speedCameraRotation);
@@ -569,29 +574,27 @@ var Tsentris;
         updateDisplay();
     }
     //#endregion
-    //#region Start/Drop Fragments
-    function startRandomFragment() {
-        let fragment = Tsentris.Shape.getRandom();
+    //#region Start/Drop Shapes
+    function startRandomShape() {
+        let shape = Tsentris.Shape.getRandom();
         let cardinals = Array.from(Tsentris.Grid.cardinals);
         control.mtxLocal.translation = Tsentris.ƒ.Vector3.ZERO();
-        control.setShape(fragment);
+        control.setShape(shape);
         updateDisplay();
         let start = {};
-        try {
-            do {
-                let index = Tsentris.ƒ.random.getIndex(cardinals);
-                let offset = cardinals.splice(index, 1)[0];
-                start = { translation: Tsentris.ƒ.Vector3.SCALE(offset, 5), rotation: Tsentris.ƒ.Vector3.ZERO() };
-                // ƒ.Debug.log(control.checkCollisions(start).length );
-            } while (control.checkCollisions(start).length > 0);
-        }
-        catch (_error) {
-            callToAction("GAME OVER");
-        }
+        do {
+            //try to find a position for the new shape, DANGER: potential endless loop
+            let offset;
+            do
+                offset = new Tsentris.ƒ.Vector3(Tsentris.ƒ.random.getRangeFloored(-1, 2), Tsentris.ƒ.random.getRangeFloored(-1, 2), Tsentris.ƒ.random.getRangeFloored(-1, 2));
+            while (offset.equals(Tsentris.ƒ.Vector3.ZERO()));
+            let scale = Math.round(5 / offset.magnitude);
+            start = { translation: Tsentris.ƒ.Vector3.SCALE(offset, scale), rotation: Tsentris.ƒ.Vector3.ZERO() };
+        } while (control.checkCollisions(start).length > 0);
         control.move(start);
         updateDisplay();
     }
-    Tsentris.startRandomFragment = startRandomFragment;
+    Tsentris.startRandomShape = startRandomShape;
     async function dropShape() {
         if (!control.isConnected()) {
             callToAction("CONNECT TO EXISTING CUBES!");
@@ -599,7 +602,7 @@ var Tsentris;
             return;
         }
         Tsentris.points.clearCalc();
-        let dropped = control.dropFragment();
+        let dropped = control.dropShape();
         let combos = new Tsentris.Combos(dropped);
         callToAction("CREATE COMBOS OF 3 OR MORE!");
         let iCombo = await handleCombos(combos, 0);
@@ -612,7 +615,7 @@ var Tsentris;
         }
         else
             Tsentris.audioEffect("drop");
-        startRandomFragment();
+        startRandomShape();
         updateDisplay();
     }
     //#endregion
@@ -797,7 +800,7 @@ var Tsentris;
         static shapes = Shape.getShapeArray();
         position = new ƒ.Vector3(0, 0, 0);
         constructor(_shape, _position = ƒ.Vector3.ZERO()) {
-            super("Fragment-Type" + _shape);
+            super("Shape-Type" + _shape);
             let shape = Shape.shapes[_shape];
             for (let position of shape) {
                 let type;
@@ -812,9 +815,9 @@ var Tsentris;
             this.addComponent(new ƒ.ComponentTransform(ƒ.Matrix4x4.TRANSLATION(_position)));
         }
         static getRandom() {
-            let shape = Math.floor(Math.random() * Shape.shapes.length);
-            let fragment = new Shape(shape);
-            return fragment;
+            let index = Math.floor(Math.random() * Shape.shapes.length);
+            let shape = new Shape(index);
+            return shape;
         }
         static getShapeArray() {
             return [
@@ -888,7 +891,7 @@ var Tsentris;
             { type: Tsentris.CUBE_TYPE.BLACK, positions: [[0, 0, 0]] }
         ];
         setupGrid(setups);
-        Tsentris.startRandomFragment();
+        Tsentris.startRandomShape();
         Tsentris.ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, rotateY);
         Tsentris.ƒ.Loop.start();
         // ƒ.Time.game.setTimer(4, 0, rotateY);

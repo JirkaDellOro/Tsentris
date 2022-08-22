@@ -56,7 +56,7 @@ namespace Tsentris {
       return collisions;
     }
 
-    public dropFragment(): GridElement[] {
+    public dropShape(): GridElement[] {
       let frozen: GridElement[] = [];
       for (let cube of this.shape!.getChildren()) {
         let position: ƒ.Vector3 = cube.mtxWorld.translation;
