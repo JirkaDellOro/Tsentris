@@ -41,6 +41,11 @@ div#PointsAnimation>span {
   position: absolute;
   right: 0.5em;
 }
+td span{
+  width: 50%;
+  display: inline-block;
+  margin: 0 0.05em;
+}
 
 /* #CallToAction, #LineCalc {
   float: right;
