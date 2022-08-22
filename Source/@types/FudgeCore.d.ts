@@ -6455,7 +6455,7 @@ declare namespace FudgeCore {
      * Determines the mode a loop runs in
      */
     enum LOOP_MODE {
-        /** Loop cycles controlled by window.requestAnimationFrame */
+        /** Loop cycles controlled by document.requestAnimationFrame */
         FRAME_REQUEST = "frameRequest",
         /** Loop cycles with the given framerate in {@link Time.game} */
         TIME_GAME = "timeGame",
@@ -6538,7 +6538,7 @@ declare namespace FudgeCore {
     }
     /**
      * Instances of this class generate a timestamp that correlates with the time elapsed since the start of the program but allows for resetting and scaling.
-     * Supports {@link Timer}s similar to window.setInterval but with respect to the scaled time.
+     * Supports {@link Timer}s similar to document.setInterval but with respect to the scaled time.
      * All time values are given in milliseconds
      *
      * @authors Jirka Dell'Oro-Friedl, HFU, 2019
@@ -6641,7 +6641,7 @@ declare namespace FudgeCore {
      */
     type TimerHandler = (_event: EventTimer) => void;
     /**
-     * A {@link Timer}-instance internally uses window.setInterval to call a given handler with a given frequency a given number of times,
+     * A {@link Timer}-instance internally uses document.setInterval to call a given handler with a given frequency a given number of times,
      * passing an {@link EventTimer}-instance with additional information and given arguments.
      * The frequency scales with the {@link Time}-instance the {@link Timer}-instance is attached to.
      *

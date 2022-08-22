@@ -444,7 +444,7 @@ var Tsentris;
         Tsentris.ƒ.Debug.log("Game starts");
         let domMenu = document.querySelector("div#Menu");
         domMenu.style.visibility = "hidden";
-        window.addEventListener("keydown", hndKeyDown); // activate when user starts...
+        document.addEventListener("keydown", hndKeyDown); // activate when user starts...
         startCountDown();
         setState(GAME_STATE.PLAY);
         Tsentris.audioInit();
@@ -453,7 +453,7 @@ var Tsentris;
     async function end() {
         let domOver = document.querySelector("div#Over");
         domOver.style.visibility = "visible";
-        window.removeEventListener("keydown", hndKeyDown);
+        document.removeEventListener("keydown", hndKeyDown);
         document.removeEventListener(Tsentris.ƒ.EVENT_TOUCH.TAP, hndTouch);
         document.removeEventListener(Tsentris.ƒ.EVENT_TOUCH.DOUBLE, hndTouch);
         document.removeEventListener(Tsentris.ƒ.EVENT_TOUCH.NOTCH, hndTouch);
@@ -464,11 +464,11 @@ var Tsentris;
     }
     async function waitForStart() {
         return new Promise(_resolve => {
-            window.addEventListener("click", hndEvent);
-            window.addEventListener(Tsentris.ƒ.EVENT_TOUCH.LONG, hndEvent);
+            document.addEventListener("click", hndEvent);
+            document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.LONG, hndEvent);
             function hndEvent(_event) {
-                window.removeEventListener("click", hndEvent);
-                window.removeEventListener(Tsentris.ƒ.EVENT_TOUCH.LONG, hndEvent);
+                document.removeEventListener("click", hndEvent);
+                document.removeEventListener(Tsentris.ƒ.EVENT_TOUCH.LONG, hndEvent);
                 _resolve();
             }
         });

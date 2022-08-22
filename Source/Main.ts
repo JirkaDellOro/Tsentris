@@ -87,7 +87,7 @@ namespace Tsentris {
     ƒ.Debug.log("Game starts");
     let domMenu: HTMLElement = document.querySelector("div#Menu")!;
     domMenu.style.visibility = "hidden";
-    window.addEventListener("keydown", hndKeyDown);  // activate when user starts...
+    document.addEventListener("keydown", hndKeyDown);  // activate when user starts...
     startCountDown();
     setState(GAME_STATE.PLAY);
     audioInit();
@@ -97,7 +97,7 @@ namespace Tsentris {
   async function end(): Promise<void> {
     let domOver: HTMLElement = document.querySelector("div#Over")!;
     domOver.style.visibility = "visible";
-    window.removeEventListener("keydown", hndKeyDown);
+    document.removeEventListener("keydown", hndKeyDown);
     document.removeEventListener(ƒ.EVENT_TOUCH.TAP, <EventListener>hndTouch);
     document.removeEventListener(ƒ.EVENT_TOUCH.DOUBLE, <EventListener>hndTouch);
     document.removeEventListener(ƒ.EVENT_TOUCH.NOTCH, <EventListener>hndTouch);
@@ -110,11 +110,11 @@ namespace Tsentris {
 
   async function waitForStart(): Promise<void> {
     return new Promise(_resolve => {
-      window.addEventListener("click", hndEvent);
-      window.addEventListener(ƒ.EVENT_TOUCH.LONG, hndEvent);
+      document.addEventListener("click", hndEvent);
+      document.addEventListener(ƒ.EVENT_TOUCH.LONG, hndEvent);
       function hndEvent(_event: MouseEvent | CustomEvent<ƒ.EventTouchDetail> | Event): void {
-        window.removeEventListener("click", hndEvent);
-        window.removeEventListener(ƒ.EVENT_TOUCH.LONG, hndEvent);
+        document.removeEventListener("click", hndEvent);
+        document.removeEventListener(ƒ.EVENT_TOUCH.LONG, hndEvent);
         _resolve();
       }
     });
