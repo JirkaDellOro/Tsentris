@@ -14,28 +14,63 @@
 
 <body>
   <div id="head">
-    <h1 style="text-align: left;">TSENTRIS</h1>
+    <h1>TSENTRIS</h1>
+    <h1 id="Score">Score</h1>
     <h1 id="Time">Time</h1>
-    <h1 id="Score" style="text-align: right;">0</h1>
+  </div>
+  <div id="info">
+    <span id="CallToAction">CONNECT & DROP !</span>
+    <div id="Calculation"></div>
+
   </div>
 
-  <canvas style="background-color: white;"> </canvas>
-
-  <div>
-    <span>WASD or Arrow-Keys to move | + SHIFT/CTRL to rotate | SPACE to drop</span>
-    <span id="CallToAction">MOVE & DROP !</span>
-  </div>
+  <canvas> </canvas>
 
   <div>
     <div id="PointsAnimation"></div>
-    <div id="Calculation"></div>
 
     <div id="Menu">
-      <h1>
-        1. press F11 for fullscreen <br />
-        2. click to lock cursor <br />
-        3. press SPACE or tap and hold to start
-      </h1>
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Desktop</th>
+            <th>Touch</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>Camera</th>
+            <td>MOUSE</td>
+            <td>2-FINGER SWIPE</td>
+          </tr>
+          <tr>
+            <th>Slide</th>
+            <td>WASD/ARROWS</td>
+            <td>1-FINGER SWIPE</td>
+          </tr>
+          <tr>
+            <th>Rotate</th>
+            <td>CTRL/SHIFT + Slide</td>
+            <td>1-FINGER SWIPE</td>
+          </tr>
+          <tr>
+            <th>Mode</th>
+            <td></td>
+            <td>TAP</td>
+          </tr>
+          <tr>
+            <th>Drop</th>
+            <td>SPACE</td>
+            <td>DOUBLETAP</td>
+          </tr>
+          <tr>
+            <th>Start</th>
+            <td>CLICK</td>
+            <td>LONGTAP</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
     <div id="Over">
       <h1>

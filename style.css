@@ -7,12 +7,11 @@
 html, body {
   height: 100%;
   width: 100%;
+  overflow: hidden;
 }
 
 body {
   background-color: black;
-  display: grid;
-  grid-template-rows: min-content auto min-content 0;
   color: white;
   text-shadow: 2px 0px 2px black, -2px 0px 2px black, 0px 2px 2px black, 0px -2px 2px black;
   font-family: 'Courier New', Courier, monospace;
@@ -25,43 +24,41 @@ canvas {
   height: 100%;
 }
 
-div {
-  padding: 0 0.5em;
-}
-
 div#head {
-  grid-template-columns: 1fr 1fr 1fr;
-  display: grid;
-  text-align: center;
+  display: inline-block;
+  position: absolute;
+  left: 0.5em;
 }
 
 div#PointsAnimation>span {
   font-size: 3em;
   font-weight: bolder;
   position: fixed;
-  /* background-color: lightgray; */
 }
 
-h1 {
-  display: inline;
+#info {
+    display: inline-block;
+    position: absolute;
+    right: 0.5em;
 }
-
-#Score, #CallToAction, #LineCalc {
+/* #CallToAction, #LineCalc {
   float: right;
-}
-
+} */
 #CallToAction {
-  color: red;
+  color:red;
+}
+#CallToAction {
+  color: white;
   /* text-shadow: none; */
   animation-name: example;
   animation-duration: 1s;
 }
 
 div#Calculation {
-  display: inline-block;
+  /* display: inline-block;
   position: absolute;
-  right: 3px;
-  top: 100px;
+  right: 3px; */
+  top: 2em;
 }
 
 div#Menu, div#Over {
@@ -75,6 +72,18 @@ div#Menu, div#Over {
 div#Over {
   visibility: hidden;
   font-size: 3em;
+  text-align: center;
+}
+
+td {
+  white-space: nowrap;
+  text-align: center;
+  padding: 0 1em;
+}
+th {
+  text-align: left;
+}
+thead th {
   text-align: center;
 }
 
