@@ -42,7 +42,7 @@ namespace Tsentris {
   }
 
   export function audioCombo(_iCombo: number) {
-    let a: ƒ.Audio = combo[_iCombo];
+    let a: ƒ.Audio = combo[Math.min(_iCombo, combo.length-1)];
     if (!a)
       return;
     cmpCombo.setAudio(a);

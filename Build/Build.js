@@ -40,7 +40,7 @@ var Tsentris;
     }
     Tsentris.audioEffect = audioEffect;
     function audioCombo(_iCombo) {
-        let a = combo[_iCombo];
+        let a = combo[Math.min(_iCombo, combo.length - 1)];
         if (!a)
             return;
         cmpCombo.setAudio(a);
