@@ -55,7 +55,7 @@ namespace Tsentris {
     // setup event handling
     canvas.addEventListener("mousemove", hndMouseMove);
     canvas.addEventListener("wheel", hndWheelMove);
-    canvas.addEventListener("click", hndClick);
+    document.addEventListener("click", hndClick);
     touchEventDispatcher = new ƒ.TouchEventDispatcher(document, 5, touchNotchTranslation);
     document.addEventListener(ƒ.EVENT_TOUCH.TAP, <EventListener>hndTouch);
     document.addEventListener(ƒ.EVENT_TOUCH.DOUBLE, <EventListener>hndTouch);
@@ -101,8 +101,13 @@ namespace Tsentris {
     document.removeEventListener(ƒ.EVENT_TOUCH.TAP, <EventListener>hndTouch);
     document.removeEventListener(ƒ.EVENT_TOUCH.DOUBLE, <EventListener>hndTouch);
     document.removeEventListener(ƒ.EVENT_TOUCH.NOTCH, <EventListener>hndTouch);
+    document.removeEventListener("click", hndClick);
     setState(GAME_STATE.OVER);
-    
+
+    console.log(new ƒ.Timer(ƒ.Time.game, 50, 0,
+      () => { camera.rotateY(0.5); updateDisplay() }
+    ));
+
     ƒ.Debug.log("Wait for click or longpress");
     await waitForStart();
     location.href = ".";

@@ -417,7 +417,7 @@ var Tsentris;
         // setup event handling
         canvas.addEventListener("mousemove", hndMouseMove);
         canvas.addEventListener("wheel", hndWheelMove);
-        canvas.addEventListener("click", hndClick);
+        document.addEventListener("click", hndClick);
         touchEventDispatcher = new Tsentris.ƒ.TouchEventDispatcher(document, 5, touchNotchTranslation);
         document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.TAP, hndTouch);
         document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.DOUBLE, hndTouch);
@@ -457,7 +457,9 @@ var Tsentris;
         document.removeEventListener(Tsentris.ƒ.EVENT_TOUCH.TAP, hndTouch);
         document.removeEventListener(Tsentris.ƒ.EVENT_TOUCH.DOUBLE, hndTouch);
         document.removeEventListener(Tsentris.ƒ.EVENT_TOUCH.NOTCH, hndTouch);
+        document.removeEventListener("click", hndClick);
         setState(GAME_STATE.OVER);
+        console.log(new Tsentris.ƒ.Timer(Tsentris.ƒ.Time.game, 50, 0, () => { Tsentris.camera.rotateY(0.5); updateDisplay(); }));
         Tsentris.ƒ.Debug.log("Wait for click or longpress");
         await waitForStart();
         location.href = ".";
