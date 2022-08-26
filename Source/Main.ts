@@ -101,6 +101,7 @@ namespace Tsentris {
     document.removeEventListener(ƒ.EVENT_TOUCH.TAP, <EventListener>hndTouch);
     document.removeEventListener(ƒ.EVENT_TOUCH.DOUBLE, <EventListener>hndTouch);
     document.removeEventListener(ƒ.EVENT_TOUCH.NOTCH, <EventListener>hndTouch);
+    document.removeEventListener(ƒ.EVENT_TOUCH.PINCH, <EventListener>hndTouch);
     document.removeEventListener("click", hndClick);
     setState(GAME_STATE.OVER);
 

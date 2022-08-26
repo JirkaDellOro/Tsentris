@@ -457,6 +457,7 @@ var Tsentris;
         document.removeEventListener(Tsentris.ƒ.EVENT_TOUCH.TAP, hndTouch);
         document.removeEventListener(Tsentris.ƒ.EVENT_TOUCH.DOUBLE, hndTouch);
         document.removeEventListener(Tsentris.ƒ.EVENT_TOUCH.NOTCH, hndTouch);
+        document.removeEventListener(Tsentris.ƒ.EVENT_TOUCH.PINCH, hndTouch);
         document.removeEventListener("click", hndClick);
         setState(GAME_STATE.OVER);
         console.log(new Tsentris.ƒ.Timer(Tsentris.ƒ.Time.game, 50, 0, () => { Tsentris.camera.rotateY(0.5); updateDisplay(); }));
@@ -534,6 +535,9 @@ var Tsentris;
                 break;
             case Tsentris.ƒ.EVENT_TOUCH.DOUBLE:
                 dropShape();
+                break;
+            case Tsentris.ƒ.EVENT_TOUCH.PINCH:
+                Tsentris.camera.translate(_event.detail.pinchDelta * speedCameraTranslation);
                 break;
             default:
                 break;
