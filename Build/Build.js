@@ -423,6 +423,7 @@ var Tsentris;
         document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.DOUBLE, hndTouch);
         document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.MOVE, hndTouch);
         document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.NOTCH, hndTouch);
+        document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.PINCH, hndTouch);
         Tsentris.game.appendChild(control);
         if (Tsentris.args.get("test"))
             Tsentris.startTests();

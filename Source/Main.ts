@@ -61,6 +61,7 @@ namespace Tsentris {
     document.addEventListener(ƒ.EVENT_TOUCH.DOUBLE, <EventListener>hndTouch);
     document.addEventListener(ƒ.EVENT_TOUCH.MOVE, <EventListener>hndTouch);
     document.addEventListener(ƒ.EVENT_TOUCH.NOTCH, <EventListener>hndTouch);
+    document.addEventListener(ƒ.EVENT_TOUCH.PINCH, <EventListener>hndTouch);
 
     game.appendChild(control);
 
