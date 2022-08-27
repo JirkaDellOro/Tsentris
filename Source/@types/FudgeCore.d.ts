@@ -2576,7 +2576,7 @@ declare namespace FudgeCore {
         LONG = "touchLong",
         /** custom event fired when two taps were detected in short succession */
         DOUBLE = "touchDouble",
-        /** custom event not implemented yet */
+        /** custom event fired when the distance between the only two touches changes beyond a tolerance */
         PINCH = "touchPinch",
         /** custom event not implemented yet */
         ROTATE = "touchRotate"
@@ -2614,6 +2614,7 @@ declare namespace FudgeCore {
         hndEvent: (_event: TouchEvent) => void;
         private detectPinch;
         private startGesture;
+        private calcAveragePosition;
     }
 }
 declare namespace FudgeCore {
@@ -3438,11 +3439,11 @@ declare namespace FudgeCore {
         /**
          * Returns a randomly selected property name from the given object
          */
-        getPropertyName(_object: Object): string;
+        getPropertyName<T>(_object: T): keyof T;
         /**
          * Returns a randomly selected symbol from the given object, if symbols are used as keys
          */
-        getPropertySymbol(_object: Object): symbol;
+        getPropertySymbol<T>(_object: T): symbol;
         /**
          * Returns a random three-dimensional vector in the limits of the box defined by the vectors given as [_corner0, _corner1[
          */

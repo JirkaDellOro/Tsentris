@@ -381,6 +381,7 @@ var Tsentris;
     window.addEventListener("load", hndLoad);
     Tsentris.game = new Tsentris.ƒ.Node("Tsentris");
     Tsentris.grid = new Tsentris.Grid();
+    Tsentris.random = new Tsentris.ƒ.Random(0);
     let state = GAME_STATE.START;
     let control = new Tsentris.Control();
     let viewport;
@@ -583,7 +584,7 @@ var Tsentris;
     //#endregion
     //#region Start/Drop Shapes
     function startRandomShape() {
-        let shape = Tsentris.Shape.getRandom();
+        let shape = Tsentris.Shape.getRandomShape();
         let cardinals = Array.from(Tsentris.Grid.cardinals);
         control.mtxLocal.translation = Tsentris.ƒ.Vector3.ZERO();
         control.setShape(shape);
@@ -593,7 +594,7 @@ var Tsentris;
             //try to find a position for the new shape, DANGER: potential endless loop
             let offset;
             do
-                offset = new Tsentris.ƒ.Vector3(Tsentris.ƒ.random.getRangeFloored(-1, 2), Tsentris.ƒ.random.getRangeFloored(-1, 2), Tsentris.ƒ.random.getRangeFloored(-1, 2));
+                offset = new Tsentris.ƒ.Vector3(Tsentris.random.getRangeFloored(-1, 2), Tsentris.random.getRangeFloored(-1, 2), Tsentris.random.getRangeFloored(-1, 2));
             while (offset.equals(Tsentris.ƒ.Vector3.ZERO()));
             let scale = Math.round(5 / offset.magnitude);
             start = { translation: Tsentris.ƒ.Vector3.SCALE(offset, scale), rotation: Tsentris.ƒ.Vector3.ZERO() };
@@ -615,7 +616,7 @@ var Tsentris;
         let iCombo = await handleCombos(combos, 0);
         if (iCombo > 0) {
             compressAndHandleCombos(iCombo);
-            if (Tsentris.ƒ.random.getBoolean())
+            if (Tsentris.random.getBoolean())
                 callToAction("MULTIPLE COMBOS SCORE HIGHER!");
             else
                 callToAction("LARGER COMBOS SCORE HIGHER!");
@@ -803,6 +804,12 @@ var Tsentris;
 var Tsentris;
 (function (Tsentris) {
     var ƒ = FudgeCore;
+    let TEST;
+    (function (TEST) {
+        TEST[TEST["A"] = 0] = "A";
+        TEST[TEST["B"] = 1] = "B";
+        TEST[TEST["C"] = 2] = "C";
+    })(TEST || (TEST = {}));
     class Shape extends ƒ.Node {
         static shapes = Shape.getShapeArray();
         position = new ƒ.Vector3(0, 0, 0);
@@ -811,9 +818,9 @@ var Tsentris;
             let shape = Shape.shapes[_shape];
             for (let position of shape) {
                 let type;
-                do {
-                    type = Shape.getRandomEnum(Tsentris.CUBE_TYPE);
-                } while (type == Tsentris.CUBE_TYPE.BLACK);
+                do
+                    type = Tsentris.CUBE_TYPE[Tsentris.random.getPropertyName(Tsentris.CUBE_TYPE)];
+                while (type == Tsentris.CUBE_TYPE.BLACK);
                 let vctPosition = ƒ.Vector3.ZERO();
                 vctPosition.set(position[0], position[1], position[2]);
                 let cube = new Tsentris.Cube(type, vctPosition);
@@ -821,8 +828,8 @@ var Tsentris;
             }
             this.addComponent(new ƒ.ComponentTransform(ƒ.Matrix4x4.TRANSLATION(_position)));
         }
-        static getRandom() {
-            let index = Math.floor(Math.random() * Shape.shapes.length);
+        static getRandomShape() {
+            let index = Tsentris.random.getRangeFloored(0, Shape.shapes.length);
             let shape = new Shape(index);
             return shape;
         }
@@ -845,10 +852,6 @@ var Tsentris;
                 // I
                 [[0, 0, 0], [0, 1, 0], [0, 2, 0], [0, -1, 0]]
             ];
-        }
-        static getRandomEnum(_enum) {
-            let randomKey = Object.keys(_enum)[Math.floor(Math.random() * Object.keys(_enum).length)];
-            return _enum[randomKey];
         }
     }
     Tsentris.Shape = Shape;

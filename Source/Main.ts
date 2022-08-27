@@ -12,6 +12,7 @@ namespace Tsentris {
   export let args: URLSearchParams;
   export let camera: CameraOrbit;
   export let points: Points;
+  export let random: ƒ.Random = new ƒ.Random(0); 
 
   let state: GAME_STATE = GAME_STATE.START;
   let control: Control = new Control();
@@ -259,7 +260,7 @@ namespace Tsentris {
 
   //#region Start/Drop Shapes
   export function startRandomShape(): void {
-    let shape: Shape = Shape.getRandom();
+    let shape: Shape = Shape.getRandomShape();
     let cardinals: ƒ.Vector3[] = Array.from(Grid.cardinals);
     control.mtxLocal.translation = ƒ.Vector3.ZERO();
     control.setShape(shape);
@@ -270,7 +271,7 @@ namespace Tsentris {
       //try to find a position for the new shape, DANGER: potential endless loop
       let offset: ƒ.Vector3;
       do
-        offset = new ƒ.Vector3(ƒ.random.getRangeFloored(-1, 2), ƒ.random.getRangeFloored(-1, 2), ƒ.random.getRangeFloored(-1, 2))
+        offset = new ƒ.Vector3(random.getRangeFloored(-1, 2), random.getRangeFloored(-1, 2), random.getRangeFloored(-1, 2))
       while (offset.equals(ƒ.Vector3.ZERO()));
 
       let scale: number = Math.round(5 / offset.magnitude);
@@ -296,7 +297,7 @@ namespace Tsentris {
     let iCombo: number = await handleCombos(combos, 0);
     if (iCombo > 0) {
       compressAndHandleCombos(iCombo);
-      if (ƒ.random.getBoolean())
+      if (random.getBoolean())
         callToAction("MULTIPLE COMBOS SCORE HIGHER!");
       else
         callToAction("LARGER COMBOS SCORE HIGHER!");
