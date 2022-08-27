@@ -27,9 +27,6 @@ namespace Tsentris {
   function hndLoad(_event: Event): void {
     const canvas: HTMLCanvasElement = document.querySelector("canvas")!;
     args = new URLSearchParams(location.search);
-    // ƒ.RenderManager.initialize(true, true);
-    ƒ.Debug.log("Canvas", canvas);
-
 
     // set lights
     let cmpLight: ƒ.ComponentLight = new ƒ.ComponentLight(new ƒ.LightDirectional(ƒ.Color.CSS("WHITE")));
@@ -51,23 +48,7 @@ namespace Tsentris {
     ƒ.Debug.log("Viewport", viewport);
     points = new Points(viewport, document.querySelector("#Score")!, document.querySelector("div#Calculation")!);
 
-    // setup event handling
-    canvas.addEventListener("mousemove", hndMouseMove);
-    canvas.addEventListener("wheel", hndWheelMove);
-    document.addEventListener("click", hndClick);
-    touchEventDispatcher = new ƒ.TouchEventDispatcher(document, 5, touchNotchTranslation);
-    document.addEventListener(ƒ.EVENT_TOUCH.TAP, <EventListener>hndTouch);
-    document.addEventListener(ƒ.EVENT_TOUCH.DOUBLE, <EventListener>hndTouch);
-    document.addEventListener(ƒ.EVENT_TOUCH.MOVE, <EventListener>hndTouch);
-    document.addEventListener(ƒ.EVENT_TOUCH.NOTCH, <EventListener>hndTouch);
-    document.addEventListener(ƒ.EVENT_TOUCH.PINCH, <EventListener>hndTouch);
-
-    document.querySelector("button")?.addEventListener("click", () => {
-      // enable unlimited mouse-movement (user needs to click on canvas first)
-      canvas.addEventListener("click", canvas.requestPointerLock);
-      canvas.requestPointerLock();
-      start();
-    });
+    document.querySelector("button")?.addEventListener("click", start);
 
     game.appendChild(control);
     grid.push(ƒ.Vector3.ZERO(), new GridElement(new Cube(CUBE_TYPE.BLACK, ƒ.Vector3.ZERO())));
@@ -89,7 +70,23 @@ namespace Tsentris {
     startRandomShape();
     let domMenu: HTMLElement = document.querySelector("div#Menu")!;
     domMenu.style.visibility = "hidden";
+
+    // setup event handling
     document.addEventListener("keydown", hndKeyDown);  // activate when user starts...
+    const canvas: HTMLCanvasElement = document.querySelector("canvas")!;
+    // enable unlimited mouse-movement (user needs to click on canvas first)
+    canvas.requestPointerLock();
+    canvas.addEventListener("click", canvas.requestPointerLock);
+    canvas.addEventListener("mousemove", hndMouseMove);
+    canvas.addEventListener("wheel", hndWheelMove);
+    canvas.addEventListener("click", hndClick);
+    touchEventDispatcher = new ƒ.TouchEventDispatcher(document, 5, touchNotchTranslation);
+    document.addEventListener(ƒ.EVENT_TOUCH.TAP, <EventListener>hndTouch);
+    document.addEventListener(ƒ.EVENT_TOUCH.DOUBLE, <EventListener>hndTouch);
+    document.addEventListener(ƒ.EVENT_TOUCH.MOVE, <EventListener>hndTouch);
+    document.addEventListener(ƒ.EVENT_TOUCH.NOTCH, <EventListener>hndTouch);
+    document.addEventListener(ƒ.EVENT_TOUCH.PINCH, <EventListener>hndTouch);
+
     startCountDown();
     setState(GAME_STATE.PLAY);
     audioInit();
@@ -111,21 +108,7 @@ namespace Tsentris {
       () => { camera.rotateY(0.5); updateDisplay() }
     ));
 
-    ƒ.Debug.log("Wait for click or longpress");
-    await waitForStart();
-    location.href = ".";
-  }
-
-  async function waitForStart(): Promise<void> {
-    return new Promise(_resolve => {
-      document.addEventListener("click", hndEvent);
-      document.addEventListener(ƒ.EVENT_TOUCH.LONG, hndEvent);
-      function hndEvent(_event: MouseEvent | CustomEvent<ƒ.EventTouchDetail> | Event): void {
-        document.removeEventListener("click", hndEvent);
-        document.removeEventListener(ƒ.EVENT_TOUCH.LONG, hndEvent);
-        _resolve();
-      }
-    });
+    document.querySelector("button#restart")?.addEventListener("click", () => location.href = ".");
   }
 
   function startCountDown(): void {

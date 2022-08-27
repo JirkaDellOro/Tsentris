@@ -10,13 +10,19 @@ html, body {
   overflow: hidden;
 }
 
-body {
+body, button {
   background-color: black;
   color: white;
   text-shadow: 2px 0px 2px black, -2px 0px 2px black, 0px 2px 2px black, 0px -2px 2px black;
   font-family: 'Courier New', Courier, monospace;
   font-size: 1.5em;
   font-weight: bolder;
+}
+
+button {
+  background-color: white;
+  border-radius: 0.2em;
+  padding: 0.2em;
 }
 
 canvas {

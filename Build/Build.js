@@ -395,8 +395,6 @@ var Tsentris;
     function hndLoad(_event) {
         const canvas = document.querySelector("canvas");
         Tsentris.args = new URLSearchParams(location.search);
-        // ƒ.RenderManager.initialize(true, true);
-        Tsentris.ƒ.Debug.log("Canvas", canvas);
         // set lights
         let cmpLight = new Tsentris.ƒ.ComponentLight(new Tsentris.ƒ.LightDirectional(Tsentris.ƒ.Color.CSS("WHITE")));
         cmpLight.mtxPivot.lookAt(new Tsentris.ƒ.Vector3(0.5, -1, -0.8));
@@ -414,22 +412,7 @@ var Tsentris;
         viewport.initialize("Viewport", Tsentris.game, Tsentris.camera.cmpCamera, canvas);
         Tsentris.ƒ.Debug.log("Viewport", viewport);
         Tsentris.points = new Tsentris.Points(viewport, document.querySelector("#Score"), document.querySelector("div#Calculation"));
-        // setup event handling
-        canvas.addEventListener("mousemove", hndMouseMove);
-        canvas.addEventListener("wheel", hndWheelMove);
-        document.addEventListener("click", hndClick);
-        touchEventDispatcher = new Tsentris.ƒ.TouchEventDispatcher(document, 5, touchNotchTranslation);
-        document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.TAP, hndTouch);
-        document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.DOUBLE, hndTouch);
-        document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.MOVE, hndTouch);
-        document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.NOTCH, hndTouch);
-        document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.PINCH, hndTouch);
-        document.querySelector("button")?.addEventListener("click", () => {
-            // enable unlimited mouse-movement (user needs to click on canvas first)
-            canvas.addEventListener("click", canvas.requestPointerLock);
-            canvas.requestPointerLock();
-            start();
-        });
+        document.querySelector("button")?.addEventListener("click", start);
         Tsentris.game.appendChild(control);
         Tsentris.grid.push(Tsentris.ƒ.Vector3.ZERO(), new Tsentris.GridElement(new Tsentris.Cube(Tsentris.CUBE_TYPE.BLACK, Tsentris.ƒ.Vector3.ZERO())));
         updateDisplay();
@@ -447,7 +430,21 @@ var Tsentris;
         startRandomShape();
         let domMenu = document.querySelector("div#Menu");
         domMenu.style.visibility = "hidden";
+        // setup event handling
         document.addEventListener("keydown", hndKeyDown); // activate when user starts...
+        const canvas = document.querySelector("canvas");
+        // enable unlimited mouse-movement (user needs to click on canvas first)
+        canvas.requestPointerLock();
+        canvas.addEventListener("click", canvas.requestPointerLock);
+        canvas.addEventListener("mousemove", hndMouseMove);
+        canvas.addEventListener("wheel", hndWheelMove);
+        canvas.addEventListener("click", hndClick);
+        touchEventDispatcher = new Tsentris.ƒ.TouchEventDispatcher(document, 5, touchNotchTranslation);
+        document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.TAP, hndTouch);
+        document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.DOUBLE, hndTouch);
+        document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.MOVE, hndTouch);
+        document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.NOTCH, hndTouch);
+        document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.PINCH, hndTouch);
         startCountDown();
         setState(GAME_STATE.PLAY);
         Tsentris.audioInit();
@@ -464,20 +461,7 @@ var Tsentris;
         document.removeEventListener("click", hndClick);
         setState(GAME_STATE.OVER);
         console.log(new Tsentris.ƒ.Timer(Tsentris.ƒ.Time.game, 50, 0, () => { Tsentris.camera.rotateY(0.5); updateDisplay(); }));
-        Tsentris.ƒ.Debug.log("Wait for click or longpress");
-        await waitForStart();
-        location.href = ".";
-    }
-    async function waitForStart() {
-        return new Promise(_resolve => {
-            document.addEventListener("click", hndEvent);
-            document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.LONG, hndEvent);
-            function hndEvent(_event) {
-                document.removeEventListener("click", hndEvent);
-                document.removeEventListener(Tsentris.ƒ.EVENT_TOUCH.LONG, hndEvent);
-                _resolve();
-            }
-        });
+        document.querySelector("button#restart")?.addEventListener("click", () => location.href = ".");
     }
     function startCountDown() {
         let countDown = new Tsentris.ƒ.Time();
