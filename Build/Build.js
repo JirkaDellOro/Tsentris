@@ -568,16 +568,14 @@ var Tsentris;
         }
         let transformation = {}; //  = Control.transformations[_event.code];
         if (Tsentris.ƒ.Keyboard.isPressedOne([Tsentris.ƒ.KEYBOARD_CODE.SHIFT_LEFT, Tsentris.ƒ.KEYBOARD_CODE.SHIFT_RIGHT, Tsentris.ƒ.KEYBOARD_CODE.CTRL_LEFT, Tsentris.ƒ.KEYBOARD_CODE.CTRL_RIGHT])) {
-            transformation = {
-                rotation: new Tsentris.ƒ.Vector3(-90 * Tsentris.ƒ.Keyboard.mapToTrit([Tsentris.ƒ.KEYBOARD_CODE.ARROW_UP, Tsentris.ƒ.KEYBOARD_CODE.W], [Tsentris.ƒ.KEYBOARD_CODE.ARROW_DOWN, Tsentris.ƒ.KEYBOARD_CODE.S]), 90 * Tsentris.ƒ.Keyboard.mapToTrit([Tsentris.ƒ.KEYBOARD_CODE.ARROW_RIGHT, Tsentris.ƒ.KEYBOARD_CODE.D], [Tsentris.ƒ.KEYBOARD_CODE.ARROW_LEFT, Tsentris.ƒ.KEYBOARD_CODE.A]), 0)
-            };
-            if (transformation.rotation?.equals(Tsentris.ƒ.Vector3.ZERO()))
+            let rotX = -90 * Tsentris.ƒ.Keyboard.mapToTrit([Tsentris.ƒ.KEYBOARD_CODE.ARROW_UP, Tsentris.ƒ.KEYBOARD_CODE.W], [Tsentris.ƒ.KEYBOARD_CODE.ARROW_DOWN, Tsentris.ƒ.KEYBOARD_CODE.S]);
+            let rotY = 90 * Tsentris.ƒ.Keyboard.mapToTrit([Tsentris.ƒ.KEYBOARD_CODE.ARROW_RIGHT, Tsentris.ƒ.KEYBOARD_CODE.D], [Tsentris.ƒ.KEYBOARD_CODE.ARROW_LEFT, Tsentris.ƒ.KEYBOARD_CODE.A]);
+            transformation.rotation = new Tsentris.ƒ.Vector3(rotX, rotX == 0 ? rotY : 0, 0);
+            if (rotX == 0 && rotY == 0)
                 return;
         }
         else
-            transformation = {
-                translation: new Tsentris.ƒ.Vector3(-1 * Tsentris.ƒ.Keyboard.mapToTrit([Tsentris.ƒ.KEYBOARD_CODE.ARROW_LEFT, Tsentris.ƒ.KEYBOARD_CODE.A], [Tsentris.ƒ.KEYBOARD_CODE.ARROW_RIGHT, Tsentris.ƒ.KEYBOARD_CODE.D]), 1 * Tsentris.ƒ.Keyboard.mapToTrit([Tsentris.ƒ.KEYBOARD_CODE.ARROW_UP, Tsentris.ƒ.KEYBOARD_CODE.W], [Tsentris.ƒ.KEYBOARD_CODE.ARROW_DOWN, Tsentris.ƒ.KEYBOARD_CODE.S]), 0)
-            };
+            transformation.translation = new Tsentris.ƒ.Vector3(-1 * Tsentris.ƒ.Keyboard.mapToTrit([Tsentris.ƒ.KEYBOARD_CODE.ARROW_LEFT, Tsentris.ƒ.KEYBOARD_CODE.A], [Tsentris.ƒ.KEYBOARD_CODE.ARROW_RIGHT, Tsentris.ƒ.KEYBOARD_CODE.D]), 1 * Tsentris.ƒ.Keyboard.mapToTrit([Tsentris.ƒ.KEYBOARD_CODE.ARROW_UP, Tsentris.ƒ.KEYBOARD_CODE.W], [Tsentris.ƒ.KEYBOARD_CODE.ARROW_DOWN, Tsentris.ƒ.KEYBOARD_CODE.S]), 0);
         if (transformation != {})
             move(transformation);
         updateDisplay();

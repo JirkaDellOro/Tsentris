@@ -84,7 +84,7 @@ namespace Tsentris {
   async function start(): Promise<void> {
     let seed: number = +document.querySelector("input")!.value;
     if (seed)
-    random = new ƒ.Random(seed);
+      random = new ƒ.Random(seed);
     setState(GAME_STATE.MENU);
     startRandomShape();
     let domMenu: HTMLElement = document.querySelector("div#Menu")!;
@@ -233,22 +233,17 @@ namespace Tsentris {
 
     let transformation: Transformation = {}; //  = Control.transformations[_event.code];
     if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SHIFT_LEFT, ƒ.KEYBOARD_CODE.SHIFT_RIGHT, ƒ.KEYBOARD_CODE.CTRL_LEFT, ƒ.KEYBOARD_CODE.CTRL_RIGHT])) {
-      transformation = {
-        rotation: new ƒ.Vector3(
-          -90 * ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.ARROW_UP, ƒ.KEYBOARD_CODE.W], [ƒ.KEYBOARD_CODE.ARROW_DOWN, ƒ.KEYBOARD_CODE.S]),
-          90 * ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.ARROW_RIGHT, ƒ.KEYBOARD_CODE.D], [ƒ.KEYBOARD_CODE.ARROW_LEFT, ƒ.KEYBOARD_CODE.A]),
-          0)
-      };
-      if (transformation.rotation?.equals(ƒ.Vector3.ZERO()))
+      let rotX: number = -90 * ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.ARROW_UP, ƒ.KEYBOARD_CODE.W], [ƒ.KEYBOARD_CODE.ARROW_DOWN, ƒ.KEYBOARD_CODE.S]);
+      let rotY: number = 90 * ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.ARROW_RIGHT, ƒ.KEYBOARD_CODE.D], [ƒ.KEYBOARD_CODE.ARROW_LEFT, ƒ.KEYBOARD_CODE.A]);
+      transformation.rotation = new ƒ.Vector3(rotX, rotX == 0 ? rotY : 0, 0);
+      if (rotX == 0 && rotY == 0)
         return;
     }
     else
-      transformation = {
-        translation: new ƒ.Vector3(
-          -1 * ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.ARROW_LEFT, ƒ.KEYBOARD_CODE.A], [ƒ.KEYBOARD_CODE.ARROW_RIGHT, ƒ.KEYBOARD_CODE.D]),
-          1 * ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.ARROW_UP, ƒ.KEYBOARD_CODE.W], [ƒ.KEYBOARD_CODE.ARROW_DOWN, ƒ.KEYBOARD_CODE.S]),
-          0)
-      };
+      transformation.translation = new ƒ.Vector3(
+        -1 * ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.ARROW_LEFT, ƒ.KEYBOARD_CODE.A], [ƒ.KEYBOARD_CODE.ARROW_RIGHT, ƒ.KEYBOARD_CODE.D]),
+        1 * ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.ARROW_UP, ƒ.KEYBOARD_CODE.W], [ƒ.KEYBOARD_CODE.ARROW_DOWN, ƒ.KEYBOARD_CODE.S]),
+        0);
 
     if (transformation != {})
       move(transformation);
