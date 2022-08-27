@@ -436,9 +436,9 @@ var Tsentris;
         // enable unlimited mouse-movement (user needs to click on canvas first)
         canvas.requestPointerLock();
         canvas.addEventListener("click", canvas.requestPointerLock);
-        canvas.addEventListener("mousemove", hndMouseMove);
-        canvas.addEventListener("wheel", hndWheelMove);
-        canvas.addEventListener("click", hndClick);
+        document.addEventListener("mousemove", hndMouseMove);
+        document.addEventListener("wheel", hndWheelMove);
+        document.addEventListener("click", hndClick);
         touchEventDispatcher = new Tsentris.ƒ.TouchEventDispatcher(document, 5, touchNotchTranslation);
         document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.TAP, hndTouch);
         document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.DOUBLE, hndTouch);
@@ -451,14 +451,17 @@ var Tsentris;
         Tsentris.audioStartMusic();
     }
     async function end() {
+        const canvas = document.querySelector("canvas");
         let domOver = document.querySelector("div#Over");
         domOver.style.visibility = "visible";
         document.removeEventListener("keydown", hndKeyDown);
+        canvas.addEventListener("click", canvas.requestPointerLock);
         document.removeEventListener(Tsentris.ƒ.EVENT_TOUCH.TAP, hndTouch);
         document.removeEventListener(Tsentris.ƒ.EVENT_TOUCH.DOUBLE, hndTouch);
         document.removeEventListener(Tsentris.ƒ.EVENT_TOUCH.NOTCH, hndTouch);
         document.removeEventListener(Tsentris.ƒ.EVENT_TOUCH.PINCH, hndTouch);
         document.removeEventListener("click", hndClick);
+        document.exitPointerLock();
         setState(GAME_STATE.OVER);
         console.log(new Tsentris.ƒ.Timer(Tsentris.ƒ.Time.game, 50, 0, () => { Tsentris.camera.rotateY(0.5); updateDisplay(); }));
         document.querySelector("button#restart")?.addEventListener("click", () => location.href = ".");
@@ -467,7 +470,7 @@ var Tsentris;
         let countDown = new Tsentris.ƒ.Time();
         countDown.setTimer(1000, 0, showCountDown);
         function showCountDown(_event) {
-            let time = 3 * 60 * 1000 - countDown.get();
+            let time = 0.1 * 60 * 1000 - countDown.get();
             displayTime(time);
             if (time < 0) {
                 countDown.clearAllTimers();

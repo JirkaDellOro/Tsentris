@@ -77,9 +77,9 @@ namespace Tsentris {
     // enable unlimited mouse-movement (user needs to click on canvas first)
     canvas.requestPointerLock();
     canvas.addEventListener("click", canvas.requestPointerLock);
-    canvas.addEventListener("mousemove", hndMouseMove);
-    canvas.addEventListener("wheel", hndWheelMove);
-    canvas.addEventListener("click", hndClick);
+    document.addEventListener("mousemove", hndMouseMove);
+    document.addEventListener("wheel", hndWheelMove);
+    document.addEventListener("click", hndClick);
     touchEventDispatcher = new ƒ.TouchEventDispatcher(document, 5, touchNotchTranslation);
     document.addEventListener(ƒ.EVENT_TOUCH.TAP, <EventListener>hndTouch);
     document.addEventListener(ƒ.EVENT_TOUCH.DOUBLE, <EventListener>hndTouch);
@@ -94,14 +94,17 @@ namespace Tsentris {
   }
 
   async function end(): Promise<void> {
+    const canvas: HTMLCanvasElement = document.querySelector("canvas")!;
     let domOver: HTMLElement = document.querySelector("div#Over")!;
     domOver.style.visibility = "visible";
     document.removeEventListener("keydown", hndKeyDown);
+    canvas.addEventListener("click", canvas.requestPointerLock);
     document.removeEventListener(ƒ.EVENT_TOUCH.TAP, <EventListener>hndTouch);
     document.removeEventListener(ƒ.EVENT_TOUCH.DOUBLE, <EventListener>hndTouch);
     document.removeEventListener(ƒ.EVENT_TOUCH.NOTCH, <EventListener>hndTouch);
     document.removeEventListener(ƒ.EVENT_TOUCH.PINCH, <EventListener>hndTouch);
     document.removeEventListener("click", hndClick);
+    document.exitPointerLock();
     setState(GAME_STATE.OVER);
 
     console.log(new ƒ.Timer(ƒ.Time.game, 50, 0,
@@ -115,7 +118,7 @@ namespace Tsentris {
     let countDown: ƒ.Time = new ƒ.Time();
     countDown.setTimer(1000, 0, showCountDown);
     function showCountDown(_event: ƒ.EventTimer): void {
-      let time: number = 3 * 60 * 1000 - countDown.get();
+      let time: number = 0.1 * 60 * 1000 - countDown.get();
       displayTime(time);
       if (time < 0) {
         countDown.clearAllTimers();
