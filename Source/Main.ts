@@ -116,7 +116,7 @@ namespace Tsentris {
     let countDown: ƒ.Time = new ƒ.Time();
     countDown.setTimer(1000, 0, showCountDown);
     function showCountDown(_event: ƒ.EventTimer): void {
-      let time: number = 0.1 * 60 * 1000 - countDown.get();
+      let time: number = 3 * 60 * 1000 - countDown.get();
       displayTime(time);
       if (time < 0) {
         countDown.clearAllTimers();

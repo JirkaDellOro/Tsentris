@@ -467,7 +467,7 @@ var Tsentris;
         let countDown = new Tsentris.ƒ.Time();
         countDown.setTimer(1000, 0, showCountDown);
         function showCountDown(_event) {
-            let time = 0.1 * 60 * 1000 - countDown.get();
+            let time = 3 * 60 * 1000 - countDown.get();
             displayTime(time);
             if (time < 0) {
                 countDown.clearAllTimers();
