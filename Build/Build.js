@@ -538,7 +538,7 @@ var Tsentris;
                 dropShape();
                 break;
             case Tsentris.ƒ.EVENT_TOUCH.PINCH:
-                Tsentris.camera.translate(_event.detail.pinchDelta * speedCameraTranslation);
+                Tsentris.camera.translate(-2 * _event.detail.pinchDelta * speedCameraTranslation);
                 break;
             default:
                 break;

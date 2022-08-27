@@ -196,7 +196,7 @@ namespace Tsentris {
         break;
 
       case ƒ.EVENT_TOUCH.PINCH:
-        camera.translate(_event.detail.pinchDelta! * speedCameraTranslation);
+        camera.translate(-2 * _event.detail.pinchDelta! * speedCameraTranslation);
         break;
 
       default:
