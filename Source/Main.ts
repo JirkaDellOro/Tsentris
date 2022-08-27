@@ -98,13 +98,11 @@ namespace Tsentris {
     let domOver: HTMLElement = document.querySelector("div#Over")!;
     domOver.style.visibility = "visible";
     document.removeEventListener("keydown", hndKeyDown);
-    canvas.addEventListener("click", canvas.requestPointerLock);
-    document.removeEventListener(ƒ.EVENT_TOUCH.TAP, <EventListener>hndTouch);
-    document.removeEventListener(ƒ.EVENT_TOUCH.DOUBLE, <EventListener>hndTouch);
-    document.removeEventListener(ƒ.EVENT_TOUCH.NOTCH, <EventListener>hndTouch);
-    document.removeEventListener(ƒ.EVENT_TOUCH.PINCH, <EventListener>hndTouch);
+    canvas.removeEventListener("click", canvas.requestPointerLock);
     document.removeEventListener("click", hndClick);
+    touchEventDispatcher.activate(false);
     document.exitPointerLock();
+    
     setState(GAME_STATE.OVER);
 
     console.log(new ƒ.Timer(ƒ.Time.game, 50, 0,
