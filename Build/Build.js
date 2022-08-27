@@ -381,7 +381,8 @@ var Tsentris;
     window.addEventListener("load", hndLoad);
     Tsentris.game = new Tsentris.ƒ.Node("Tsentris");
     Tsentris.grid = new Tsentris.Grid();
-    Tsentris.random = new Tsentris.ƒ.Random(0);
+    Tsentris.random = new Tsentris.ƒ.Random();
+    ;
     let state = GAME_STATE.START;
     let control = new Tsentris.Control();
     let viewport;
@@ -396,8 +397,6 @@ var Tsentris;
         Tsentris.args = new URLSearchParams(location.search);
         // ƒ.RenderManager.initialize(true, true);
         Tsentris.ƒ.Debug.log("Canvas", canvas);
-        // enable unlimited mouse-movement (user needs to click on canvas first)
-        canvas.addEventListener("click", canvas.requestPointerLock);
         // set lights
         let cmpLight = new Tsentris.ƒ.ComponentLight(new Tsentris.ƒ.LightDirectional(Tsentris.ƒ.Color.CSS("WHITE")));
         cmpLight.mtxPivot.lookAt(new Tsentris.ƒ.Vector3(0.5, -1, -0.8));
@@ -425,11 +424,14 @@ var Tsentris;
         document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.MOVE, hndTouch);
         document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.NOTCH, hndTouch);
         document.addEventListener(Tsentris.ƒ.EVENT_TOUCH.PINCH, hndTouch);
-        Tsentris.game.appendChild(control);
-        if (Tsentris.args.get("test"))
-            Tsentris.startTests();
-        else
+        document.querySelector("button")?.addEventListener("click", () => {
+            // enable unlimited mouse-movement (user needs to click on canvas first)
+            canvas.addEventListener("click", canvas.requestPointerLock);
+            canvas.requestPointerLock();
             start();
+        });
+        Tsentris.game.appendChild(control);
+        Tsentris.grid.push(Tsentris.ƒ.Vector3.ZERO(), new Tsentris.GridElement(new Tsentris.Cube(Tsentris.CUBE_TYPE.BLACK, Tsentris.ƒ.Vector3.ZERO())));
         updateDisplay();
         Tsentris.ƒ.Debug.log("Game", Tsentris.game);
     }
@@ -438,12 +440,11 @@ var Tsentris;
         Tsentris.ƒ.Debug.log("State", state);
     }
     async function start() {
+        let seed = +document.querySelector("input").value;
+        if (seed)
+            Tsentris.random = new Tsentris.ƒ.Random(seed);
         setState(GAME_STATE.MENU);
-        Tsentris.grid.push(Tsentris.ƒ.Vector3.ZERO(), new Tsentris.GridElement(new Tsentris.Cube(Tsentris.CUBE_TYPE.BLACK, Tsentris.ƒ.Vector3.ZERO())));
         startRandomShape();
-        Tsentris.ƒ.Debug.log("Wait for click or longpress");
-        await waitForStart();
-        Tsentris.ƒ.Debug.log("Game starts");
         let domMenu = document.querySelector("div#Menu");
         domMenu.style.visibility = "hidden";
         document.addEventListener("keydown", hndKeyDown); // activate when user starts...

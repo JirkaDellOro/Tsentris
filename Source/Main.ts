@@ -12,7 +12,7 @@ namespace Tsentris {
   export let args: URLSearchParams;
   export let camera: CameraOrbit;
   export let points: Points;
-  export let random: ƒ.Random = new ƒ.Random(0); 
+  export let random: ƒ.Random = new ƒ.Random();;
 
   let state: GAME_STATE = GAME_STATE.START;
   let control: Control = new Control();
@@ -30,8 +30,6 @@ namespace Tsentris {
     // ƒ.RenderManager.initialize(true, true);
     ƒ.Debug.log("Canvas", canvas);
 
-    // enable unlimited mouse-movement (user needs to click on canvas first)
-    canvas.addEventListener("click", canvas.requestPointerLock);
 
     // set lights
     let cmpLight: ƒ.ComponentLight = new ƒ.ComponentLight(new ƒ.LightDirectional(ƒ.Color.CSS("WHITE")));
@@ -64,12 +62,15 @@ namespace Tsentris {
     document.addEventListener(ƒ.EVENT_TOUCH.NOTCH, <EventListener>hndTouch);
     document.addEventListener(ƒ.EVENT_TOUCH.PINCH, <EventListener>hndTouch);
 
-    game.appendChild(control);
-
-    if (args.get("test"))
-      startTests();
-    else
+    document.querySelector("button")?.addEventListener("click", () => {
+      // enable unlimited mouse-movement (user needs to click on canvas first)
+      canvas.addEventListener("click", canvas.requestPointerLock);
+      canvas.requestPointerLock();
       start();
+    });
+
+    game.appendChild(control);
+    grid.push(ƒ.Vector3.ZERO(), new GridElement(new Cube(CUBE_TYPE.BLACK, ƒ.Vector3.ZERO())));
 
     updateDisplay();
     ƒ.Debug.log("Game", game);
@@ -81,12 +82,11 @@ namespace Tsentris {
   }
 
   async function start(): Promise<void> {
+    let seed: number = +document.querySelector("input")!.value;
+    if (seed)
+    random = new ƒ.Random(seed);
     setState(GAME_STATE.MENU);
-    grid.push(ƒ.Vector3.ZERO(), new GridElement(new Cube(CUBE_TYPE.BLACK, ƒ.Vector3.ZERO())));
     startRandomShape();
-    ƒ.Debug.log("Wait for click or longpress");
-    await waitForStart();
-    ƒ.Debug.log("Game starts");
     let domMenu: HTMLElement = document.querySelector("div#Menu")!;
     domMenu.style.visibility = "hidden";
     document.addEventListener("keydown", hndKeyDown);  // activate when user starts...
