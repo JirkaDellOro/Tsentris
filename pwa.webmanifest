@@ -1,0 +1,8 @@
+{
+  "name": "Tsentris",
+  "short_name": "Tsentris",
+  "start_url": ".",
+  "display": "fullscreen",
+  "background_color" : "#f00" ,
+  "description": "A game combining Tetris and Match-3 mechanics in threedimensional space"
+}
