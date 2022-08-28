@@ -4,6 +4,6 @@
   "start_url": ".",
   "display": "fullscreen",
   "background_color" : "#f00" ,
-  "orientation": "landscape-primary",
+  "orientation": "landscape",
   "description": "A game combining Tetris and Match-3 mechanics in threedimensional space"
 }
