@@ -116,3 +116,38 @@ thead th {
     color: white;
   }
 }
+
+@media only screen and (max-width: 820px) {
+  #Menu {
+    font-size: 1.2rem;
+  }
+
+  #head h1 {
+    font-size: 2rem;
+  }
+
+  #info{
+    font-size: 1.3rem;
+  } 
+}
+
+
+@media only screen and (max-width: 640px) {
+  #Menu {
+    font-size: 0.82rem;
+  }
+
+  #head h1 {
+    font-size: 1.2rem;
+  }
+
+  #info{
+    font-size: 1rem;
+  } 
+}
+
+@media only screen and (max-width: 420px) {
+  #info {
+    max-width: 50%;
+  }
+}
