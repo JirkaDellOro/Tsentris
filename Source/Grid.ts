@@ -39,8 +39,10 @@ namespace Tsentris {
       if (this.pop(_position))
         ƒ.Debug.warn("Grid push to occupied position, popped: ", key);
       this.set(key, _element);
-      if (_element)
+      if (_element){
         game.appendChild(_element.cube);
+        console.log(_position.toString());
+      }
     }
 
     public pull(_position: ƒ.Vector3): GridElement {

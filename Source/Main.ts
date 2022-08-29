@@ -102,12 +102,13 @@ namespace Tsentris {
     document.removeEventListener("click", hndClick);
     touchEventDispatcher.activate(false);
     document.exitPointerLock();
-    
+
     setState(GAME_STATE.OVER);
 
-    console.log(new ƒ.Timer(ƒ.Time.game, 50, 0,
-      () => { camera.rotateY(0.5); updateDisplay() }
-    ));
+    ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, 
+      () => { camera.rotateY(0.5); updateDisplay(); }
+    );
+    ƒ.Loop.start();
 
     document.querySelector("button#restart")?.addEventListener("click", () => location.href = ".");
   }
@@ -258,15 +259,25 @@ namespace Tsentris {
     } while (control.checkCollisions(start).length > 0);
 
     control.move(start);
+    control.checkOut();
     updateDisplay();
   }
 
   async function dropShape(): Promise<void> {
+    if (control.checkOut()) {
+      callToAction("BRING SHAPE CLOSER IN!");
+      audioEffect("nodrop");
+      return;
+    }
+
     if (!control.isConnected()) {
       callToAction("CONNECT TO EXISTING CUBES!");
       audioEffect("nodrop");
       return;
     }
+    
+   
+
     points.clearCalc();
 
     let dropped: GridElement[] = control.dropShape();
@@ -339,6 +350,8 @@ namespace Tsentris {
       audioEffect("collision")
       return;
     }
+
+    control.checkOut();
 
     if (_transformation.translation)
       audioEffect("translate");

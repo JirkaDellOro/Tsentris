@@ -79,5 +79,20 @@ namespace Tsentris {
       }
       return neighbors.length > 0;
     }
+
+    public checkOut(): boolean {
+      let children: ƒ.Node[] = this.shape!.getChildren();
+      let out: boolean = false;
+      for (let cube of children)
+        if (cube.mtxWorld.translation.magnitude > 5) {
+          cube.getComponent(ƒ.ComponentMaterial).clrPrimary.a = 0.5;
+          cube.mtxLocal.scaling = ƒ.Vector3.ONE(0.8);
+          out ||= true;
+        } else {
+          cube.getComponent(ƒ.ComponentMaterial).clrPrimary.a = 1;
+          cube.mtxLocal.scaling = ƒ.Vector3.ONE(1);
+        }
+      return out;
+    }
   }
 }

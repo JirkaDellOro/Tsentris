@@ -234,6 +234,21 @@ var Tsentris;
             }
             return neighbors.length > 0;
         }
+        checkOut() {
+            let children = this.shape.getChildren();
+            let out = false;
+            for (let cube of children)
+                if (cube.mtxWorld.translation.magnitude > 5) {
+                    cube.getComponent(ƒ.ComponentMaterial).clrPrimary.a = 0.5;
+                    cube.mtxLocal.scaling = ƒ.Vector3.ONE(0.8);
+                    out ||= true;
+                }
+                else {
+                    cube.getComponent(ƒ.ComponentMaterial).clrPrimary.a = 1;
+                    cube.mtxLocal.scaling = ƒ.Vector3.ONE(1);
+                }
+            return out;
+        }
     }
     Tsentris.Control = Control;
 })(Tsentris || (Tsentris = {}));
@@ -310,8 +325,10 @@ var Tsentris;
             if (this.pop(_position))
                 ƒ.Debug.warn("Grid push to occupied position, popped: ", key);
             this.set(key, _element);
-            if (_element)
+            if (_element) {
                 Tsentris.game.appendChild(_element.cube);
+                console.log(_position.toString());
+            }
         }
         pull(_position) {
             let key = this.toKey(_position);
@@ -460,7 +477,8 @@ var Tsentris;
         touchEventDispatcher.activate(false);
         document.exitPointerLock();
         setState(GAME_STATE.OVER);
-        console.log(new Tsentris.ƒ.Timer(Tsentris.ƒ.Time.game, 50, 0, () => { Tsentris.camera.rotateY(0.5); updateDisplay(); }));
+        Tsentris.ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, () => { Tsentris.camera.rotateY(0.5); updateDisplay(); });
+        Tsentris.ƒ.Loop.start();
         document.querySelector("button#restart")?.addEventListener("click", () => location.href = ".");
     }
     function startCountDown() {
@@ -583,10 +601,16 @@ var Tsentris;
             start = { translation: Tsentris.ƒ.Vector3.SCALE(offset, scale), rotation: Tsentris.ƒ.Vector3.ZERO() };
         } while (control.checkCollisions(start).length > 0);
         control.move(start);
+        control.checkOut();
         updateDisplay();
     }
     Tsentris.startRandomShape = startRandomShape;
     async function dropShape() {
+        if (control.checkOut()) {
+            callToAction("BRING SHAPE CLOSER IN!");
+            Tsentris.audioEffect("nodrop");
+            return;
+        }
         if (!control.isConnected()) {
             callToAction("CONNECT TO EXISTING CUBES!");
             Tsentris.audioEffect("nodrop");
@@ -657,6 +681,7 @@ var Tsentris;
             Tsentris.audioEffect("collision");
             return;
         }
+        control.checkOut();
         if (_transformation.translation)
             Tsentris.audioEffect("translate");
         if (_transformation.rotation)
