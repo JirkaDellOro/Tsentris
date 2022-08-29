@@ -553,8 +553,8 @@ var Tsentris;
         dropShape();
     }
     function hndMouseMove(_event) {
-        Tsentris.camera.rotateY(_event.movementX * speedCameraRotation);
-        Tsentris.camera.rotateX(_event.movementY * speedCameraRotation);
+        Tsentris.camera.rotateY(-_event.movementX * speedCameraRotation);
+        Tsentris.camera.rotateX(-_event.movementY * speedCameraRotation);
         updateDisplay();
     }
     function hndWheelMove(_event) {

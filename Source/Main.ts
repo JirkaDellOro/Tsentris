@@ -196,8 +196,8 @@ namespace Tsentris {
   }
 
   function hndMouseMove(_event: MouseEvent): void {
-    camera.rotateY(_event.movementX * speedCameraRotation);
-    camera.rotateX(_event.movementY * speedCameraRotation);
+    camera.rotateY(-_event.movementX * speedCameraRotation);
+    camera.rotateX(-_event.movementY * speedCameraRotation);
 
     updateDisplay();
   }
